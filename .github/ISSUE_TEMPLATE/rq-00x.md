@@ -1,7 +1,7 @@
 ---
-name: RQ-00X-HX
+name: Nuevo requerimiento
 about: Suggest an idea for this project
-title: ''
+title: 'RQ-00X-HX'
 labels: ''
 assignees: ''
 
