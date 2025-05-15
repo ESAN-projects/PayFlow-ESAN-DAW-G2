@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.API", "PayFlow.API\PayFlow.API.csproj", "{6EC1E103-6F1E-4BD1-AC65-49D17B56A050}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.DOMAIN", "PayFlow.DOMAIN\PayFlow.DOMAIN.csproj", "{E5138B63-47D7-4F06-B2EF-613136D06A27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6EC1E103-6F1E-4BD1-AC65-49D17B56A050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EC1E103-6F1E-4BD1-AC65-49D17B56A050}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EC1E103-6F1E-4BD1-AC65-49D17B56A050}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EC1E103-6F1E-4BD1-AC65-49D17B56A050}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5138B63-47D7-4F06-B2EF-613136D06A27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5138B63-47D7-4F06-B2EF-613136D06A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5138B63-47D7-4F06-B2EF-613136D06A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5138B63-47D7-4F06-B2EF-613136D06A27}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2FCBA34-0504-44C6-A521-66B6F6BFE187}
+	EndGlobalSection
+EndGlobal
