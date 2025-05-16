@@ -18,6 +18,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddTransient<IUsuariosService, UsuariosService>();
+builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
+builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
