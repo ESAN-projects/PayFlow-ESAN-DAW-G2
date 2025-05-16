@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.DOMAIN.Core.Interfaces;
+using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
+using PayFlow.DOMAIN.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,9 @@ builder.Services.AddDbContext<PayflowContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddTransient<IUsuariosService, UsuariosService>();
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
