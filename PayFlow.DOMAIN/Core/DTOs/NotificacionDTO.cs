@@ -33,6 +33,8 @@ namespace PayFlow.DOMAIN.Core.DTOs
 
     public class NotificacionCreateDTO
     {
+        public int UsuarioId { get; set; }
+        public int? TransaccionId { get; set; }
         public string? TipoNotificacion { get; set; }
         public string Mensaje { get; set; } = null!;
         public DateTime FechaHora { get; set; }
