@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.Entities;
+using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
 
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
-    internal class AdministradoresRepository
+    public class AdministradoresRepository : IAdministradoresRepository
     {
         private readonly PayflowContext _context;
         public AdministradoresRepository(PayflowContext context)
@@ -30,7 +31,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         //Add Administradores
-        public async Task<Administradores> AddAdministradoresAsync(Administradores administradores)    
+        public async Task<Administradores> AddAdministradoresAsync(Administradores administradores)
         {
             administradores.EstadoAdministrador = "Activo";
             await _context.Administradores.AddAsync(administradores);
@@ -43,43 +44,43 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         {
             var existingAdministrador = await GetAdministradoresByIdAsync(administradores.AdministradorId);
             if (existingAdministrador != null)
-                
-            existingAdministrador.Nombres = administradores.Nombres;
+
+                existingAdministrador.Nombres = administradores.Nombres;
             existingAdministrador.Apellidos = administradores.Apellidos;
             existingAdministrador.CorreoElectronico = administradores.CorreoElectronico;
             existingAdministrador.ContraseñaHash = administradores.ContraseñaHash;
             existingAdministrador.FechaRegistro = DateTime.Now;
-            await _context.SaveChangesAsync();       
+            await _context.SaveChangesAsync();
             return existingAdministrador;
         }
 
-        // CRUD operations for Category
-        public async Task<List<Category>> GetAllCategoriesAsync()
+        //Delete Administradores
+        public async Task<bool> DeleteAdministradoresAsync(int id)
         {
-            return await _context.Categories.ToListAsync();
-        }
-        public async Task<Category> GetCategoryByIdAsync(int id)
-        {
-            return await _context.Categories.FindAsync(id);
-        }
-        public async Task AddCategoryAsync(Category category)
-        {
-            await _context.Categories.AddAsync(category);
-            await _context.SaveChangesAsync();
-        }
-        public async Task UpdateCategoryAsync(Category category)
-        {
-            _context.Categories.Update(category);
-            await _context.SaveChangesAsync();
-        }
-        public async Task DeleteCategoryAsync(int id)
-        {
-            var category = await GetCategoryByIdAsync(id);
-            if (category != null)
+            var administradores = await GetAdministradoresByIdAsync(id);
+            if (administradores == null)
             {
-                _context.Categories.Remove(category);
-                await _context.SaveChangesAsync();
+                return false;
             }
+            administradores.EstadoAdministrador = "Inactivo";
+            _context.Administradores.Update(administradores);
+            await _context.SaveChangesAsync();
+            return true;
         }
+
+        // Delete Administradores by id (remove)
+        public async Task<bool> RemoveAdministradoresAsync(int id)
+        {
+            var administradores = await GetAdministradoresByIdAsync(id);
+            if (administradores == null)
+            {
+                return false;
+            }
+            _context.Administradores.Remove(administradores);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 }

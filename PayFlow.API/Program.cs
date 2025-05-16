@@ -12,12 +12,15 @@ var connectionString = config.GetConnectionString("DevConnection");
 builder.Services.AddDbContext<PayflowContext>(options =>
     options.UseSqlServer(connectionString));
 
+
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddTransient<IUsuariosService, UsuariosService>();
+builder.Services.AddTransient<IAdministradoresRepository, AdministradoresRepository>();
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
