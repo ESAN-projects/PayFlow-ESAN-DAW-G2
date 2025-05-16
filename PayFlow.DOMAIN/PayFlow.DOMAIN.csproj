@@ -7,10 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Core\DTOs\" />
-    <Folder Include="Core\Interfaces\" />
     <Folder Include="Core\Settings\" />
-    <Folder Include="Core\Servicies\" />
     <Folder Include="Infrastructure\Data\" />
     <Folder Include="Infrastructure\Shared\" />
   </ItemGroup>
