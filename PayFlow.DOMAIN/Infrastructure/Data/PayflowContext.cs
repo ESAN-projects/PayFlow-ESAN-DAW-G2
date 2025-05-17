@@ -26,6 +26,7 @@ public partial class PayflowContext : DbContext
 
     public virtual DbSet<Usuarios> Usuarios { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Administradores>(entity =>
