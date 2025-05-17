@@ -36,7 +36,7 @@ namespace PayFlow.API.Controllers
             }
             return Ok(administradores);
         }
-        // POST add Administradores
+        // Add Administradores
         [HttpPost]
         public async Task<IActionResult> AddAdministradores([FromBody] Administradores administradores)
         {
@@ -47,5 +47,8 @@ namespace PayFlow.API.Controllers
             var AdministradoresId = await _administradoresRepository.AddAdministradoresAsync(administradores);
             return CreatedAtAction(nameof(GetAdministradoresById), new { id = AdministradoresId }, administradores);
         }
+
+        // Delte Administradores
+        []
     }
 }
