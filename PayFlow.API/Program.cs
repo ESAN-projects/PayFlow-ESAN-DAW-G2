@@ -24,6 +24,7 @@ builder.Services.AddTransient<IUsuariosService, UsuariosService>();
 builder.Services.AddTransient<IAdministradoresRepository, AdministradoresRepository>();
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
+builder.Services.AddTransient<IAdministradorService, AdministradorService>();
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();

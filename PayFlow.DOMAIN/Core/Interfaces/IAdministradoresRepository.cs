@@ -9,6 +9,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<Administradores> GetAdministradoresByIdAsync(int id);
         Task<List<Administradores>> GetAllAdministradoresAsync();
         Task<bool> RemoveAdministradoresAsync(int id);
-        Task<Administradores> UpdateAdministradoresAsync(Administradores administradores);
+        Task<bool> UpdateAdministradoresAsync(Administradores administrador);
     }
 }
