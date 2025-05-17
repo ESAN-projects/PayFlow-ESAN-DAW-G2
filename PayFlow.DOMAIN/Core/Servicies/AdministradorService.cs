@@ -61,18 +61,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
 
         //Update administradores
-        /*public async Task<Administradores> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO)
-        {
-            var administradores = new Administradores
-            {
-                AdministradorId = administradorListDTO.AdministradorId,
-                Nombres = administradorListDTO.Nombres,
-                Apellidos = administradorListDTO.Apellidos,
-                
-            };
-            return await _administradoresRepository.UpdateAdministradoresAsync(administradores);
-
-        }*/
+       
         public async Task<Administradores> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO)
         {
             var administradores = await _administradoresRepository.GetAdministradoresByIdAsync(administradorListDTO.AdministradorId);
@@ -86,25 +75,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
         }
 
         //Delete ADM borrado logico
-        /*public async Task<bool> DeleteAdministradoresAsync(int id)
-        {
-            var administradores = await _administradoresRepository.GetAdministradoresByIdAsync(id);
-            if (administradores == null)
-            {
-                return false;
-            }
-            administradores.EstadoAdministrador ="Inactivo";
-            return await _administradoresRepository.DeleteAdministradoresAsync(administradores);
-
-        }*/
-
+        
         public async Task<bool> DeleteAdministradoresAsync(int id)
-        {
-            return await _administradoresRepository.DeleteAdministradoresAsync(id);
-        }
-
-        // Delete Administradores (borrado físico)
-        public async Task<bool> Delete2AdministradoresAsync(int id)
         {
             return await _administradoresRepository.DeleteAdministradoresAsync(id);
         }

@@ -1,12 +1,12 @@
 ﻿using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 
-namespace PayFlow.DOMAIN.Core.Servicies
+namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface IAdministradorService
     {
         Task<Administradores> AddAdministradoresAsync(AdministradorCreateDTO administradorCreateDTO);
-        Task<bool> Delete2AdministradoresAsync(int id);
+       // Task<bool> Delete2AdministradoresAsync(int id);
         Task<bool> DeleteAdministradoresAsync(int id);
         Task<AdministradorListDTO> GetAdministradoresByIdAsync(int id);
         Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync();

@@ -65,7 +65,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return administradores;
         }
-        //Delete Administradores by id (borrado logico)
+        //Delete Administradores
         public async Task<bool> DeleteAdministradoresAsync(int id)
         {
             var administradores = await GetAdministradoresByIdAsync(id);
@@ -79,10 +79,8 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return true;
         }
 
-        
-
-        // Delete Administradores (borrado físico)
-        public async Task<bool> Delete2AdministradoresAsync(int id)
+        // Delete Administradores by id (borrado logico)
+        public async Task<bool> RemoveAdministradoresAsync(int id)
         {
             var administradores = await GetAdministradoresByIdAsync(id);
             if (administradores == null)
@@ -90,10 +88,13 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                 return false;
             }
 
-            _context.Administradores.Remove(administradores); 
+            administradores.EstadoAdministrador = "Inactivo";
+            _context.Administradores.Update(administradores);
             await _context.SaveChangesAsync();
             return true;
         }
+
+        
 
     }
 }
