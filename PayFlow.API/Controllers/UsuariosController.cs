@@ -4,7 +4,7 @@ using PayFlow.DOMAIN.Core.Interfaces;
 
 namespace PayFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {

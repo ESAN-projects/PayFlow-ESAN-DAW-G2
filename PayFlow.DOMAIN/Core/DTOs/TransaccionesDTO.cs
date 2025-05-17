@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PayFlow.DOMAIN.Core.DTOs
+{
+    public class TransaccionesDTO
+    {
+        public int TransaccionId { get; set; }
+        public int CuentaId { get; set; }
+        public string TipoTransaccion { get; set; } = null!;
+        public decimal Monto { get; set; }
+        public DateTime FechaHora { get; set; }
+        public string Estado { get; set; } = null!;
+        public string? NumeroOperacion { get; set; }
+        public string? Banco { get; set; }
+        public string? RutaVoucher { get; set; }
+        public string? ComentariosAdmin { get; set; }
+        public string? Comentario { get; set; }
+        public int? CuentaDestinoId { get; set; }
+        public string? Iporigen { get; set; }
+        public string? Ubicacion { get; set; }
+    }
+    public class TransaccionesCreateDTO
+    {
+        public int TransaccionId { get; set; }
+        public int CuentaId { get; set; }
+        public string TipoTransaccion { get; set; } = null!;
+        public decimal Monto { get; set; }
+        public DateTime FechaHora { get; set; }
+        public string Estado { get; set; } = null!;
+    }
+
+    public class TransaccionesListDTO
+    {
+        public int TransaccionId { get; set; }
+        public int CuentaId { get; set; }
+        public string TipoTransaccion { get; set; } = null!;
+        public decimal Monto { get; set; }
+        public DateTime FechaHora { get; set; }
+        public string Estado { get; set; } = null!;
+        public string? Iporigen { get; set; }
+        public string? Ubicacion { get; set; }
+    }
+}
