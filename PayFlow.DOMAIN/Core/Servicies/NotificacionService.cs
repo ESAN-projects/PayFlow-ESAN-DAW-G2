@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -28,7 +29,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 UsuarioId = c.UsuarioId,
                 FechaHora = c.FechaHora,
                 Mensaje = c.Mensaje,
-                TipoNotificacion = c.TipoNotificacion
+                TipoNotificacion = c.TipoNotificacion,
+                Estado = c.Estado,
 
             });
 
@@ -54,14 +56,16 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return categoryDTO;
         }
 
-        public async Task<int> AddNotificacion(NotificacionCreateDTO notificacionDTO)
+        public async Task<int> AddNotificacion(NotificacionCreateDTO data)
         {
             var notificacion = new Notificaciones
             {
-                TipoNotificacion = notificacionDTO.TipoNotificacion,
-                Mensaje = notificacionDTO.Mensaje,
-                FechaHora = notificacionDTO.FechaHora,
-                Estado = notificacionDTO.Estado,
+                UsuarioId = data.UsuarioId,
+                TransaccionId = data.TransaccionId,
+                TipoNotificacion = data.TipoNotificacion,
+                Mensaje = data.Mensaje,
+                FechaHora = data.FechaHora,
+                Estado = data.Estado,
 
             };
             return await _notificacionRepository.AddNotificacion(notificacion);
@@ -69,16 +73,17 @@ namespace PayFlow.DOMAIN.Core.Servicies
         }
 
         //Update notificacion
-        public async Task<bool> UpdateNotificacion(NotificacionListDTO dato)
+        public async Task<bool> UpdateNotificacion(NotificacionDTO data)
         {
             var notificacion = new Notificaciones
             {
-                NotificacionId = dato.NotificacionId,
-                UsuarioId = dato.UsuarioId,
-                TransaccionId = dato.TransaccionId,
-                TipoNotificacion = dato.TipoNotificacion,
-                Mensaje = dato.Mensaje,
-                FechaHora = dato.FechaHora,
+                NotificacionId = data.NotificacionId,
+                UsuarioId = data.UsuarioId,
+                TransaccionId = data.TransaccionId,
+                TipoNotificacion = data.TipoNotificacion,
+                Mensaje = data.Mensaje,
+                FechaHora = data.FechaHora,
+                Estado = data.Estado,
 
             };
             return await _notificacionRepository.UpdateNotificacion(notificacion);

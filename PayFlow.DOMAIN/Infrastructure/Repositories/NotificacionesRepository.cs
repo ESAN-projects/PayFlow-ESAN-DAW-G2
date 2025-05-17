@@ -63,8 +63,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             {
                 return false;
             }
-            notificacion.Estado = "Inactivo";
-            _context.Notificaciones.Update(notificacion);
+            _context.Notificaciones.Remove(notificacion);
             await _context.SaveChangesAsync();
             return true;
         }

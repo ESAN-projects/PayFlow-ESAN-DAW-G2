@@ -8,6 +8,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<bool> DeleteNotificacion(int id);
         Task<IEnumerable<NotificacionListDTO>> GetAllNotificaciones();
         Task<NotificacionListDTO> GetNotificacionById(int id);
-        Task<bool> UpdateNotificacion(NotificacionListDTO dato);
+        Task<bool> UpdateNotificacion(NotificacionDTO data);
     }
 }

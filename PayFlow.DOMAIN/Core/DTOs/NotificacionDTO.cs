@@ -16,8 +16,6 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public string Mensaje { get; set; } = null!;
         public DateTime FechaHora { get; set; }
         public string Estado { get; set; } = null!;
-        public virtual Transacciones? Transaccion { get; set; }
-        public virtual Usuarios Usuario { get; set; } = null!;
 
     }
 
@@ -29,6 +27,7 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public string TipoNotificacion { get; set; } = null!;
         public string Mensaje { get; set; } = null!;
         public DateTime FechaHora { get; set; }
+        public string Estado { get; set; } = null!;
     }
 
     public class NotificacionCreateDTO

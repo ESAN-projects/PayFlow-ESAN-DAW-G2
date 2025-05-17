@@ -46,7 +46,7 @@ namespace PayFlow.API.Controllers
 
         //Update notificacion
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateNotificacion(int id, [FromBody] NotificacionListDTO data)
+        public async Task<IActionResult> UpdateNotificacion(int id, [FromBody] NotificacionDTO data)
         {
             if (id != data.NotificacionId)
             {
