@@ -48,12 +48,14 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return administradorDTO;
         }
         //Add administradores
-        public async Task<Administradores> AddAdministradoresAsync(AdministradorCreateDTO administradorCreateDTO)
+        public async Task<Administradores> AddAdministradoresAsync(AdministradorCreateDTO data)
         {
             var administradores = new Administradores
             {
-                Nombres = administradorCreateDTO.Nombres,
-                Apellidos = administradorCreateDTO.Apellidos,
+                Nombres = data.Nombres,
+                Apellidos = data.Apellidos,
+                CorreoElectronico = data.CorreoElectronico,
+                ContraseñaHash = data.ContraseñaHash
 
             };
             return await _administradoresRepository.AddAdministradoresAsync(administradores);
@@ -61,21 +63,28 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
 
         //Update administradores
-       
-        public async Task<Administradores> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO)
-        {
-            var administradores = await _administradoresRepository.GetAdministradoresByIdAsync(administradorListDTO.AdministradorId);
-            if (administradores == null) return null!;
 
-            administradores.Nombres = administradorListDTO.Nombres;
-            administradores.Apellidos = administradorListDTO.Apellidos;
-            // Solo modificas los campos que quieres actualizar
+        public async Task<bool> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO)
+        {       
 
-            return await _administradoresRepository.UpdateAdministradoresAsync(administradores);
+            var administrador = new Administradores
+            {
+                AdministradorId = administradorListDTO.AdministradorId,
+                Nombres = administradorListDTO.Nombres,
+                Apellidos = administradorListDTO.Apellidos,
+                ContraseñaHash = administradorListDTO.ContraseñaHash,
+                CorreoElectronico = administradorListDTO.CorreoElectronico,
+                EstadoAdministrador = administradorListDTO.EstadoAdministrador,
+                FechaRegistro = DateTime.Now,
+
+            };
+
+            return await _administradoresRepository.UpdateAdministradoresAsync(administrador);
+
         }
 
         //Delete ADM borrado logico
-        
+
         public async Task<bool> DeleteAdministradoresAsync(int id)
         {
             return await _administradoresRepository.DeleteAdministradoresAsync(id);

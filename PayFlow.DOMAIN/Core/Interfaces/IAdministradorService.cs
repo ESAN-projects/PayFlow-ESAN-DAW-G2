@@ -5,11 +5,10 @@ namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface IAdministradorService
     {
-        Task<Administradores> AddAdministradoresAsync(AdministradorCreateDTO administradorCreateDTO);
-       // Task<bool> Delete2AdministradoresAsync(int id);
+        Task<Administradores> AddAdministradoresAsync(AdministradorCreateDTO data);
         Task<bool> DeleteAdministradoresAsync(int id);
         Task<AdministradorListDTO> GetAdministradoresByIdAsync(int id);
         Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync();
-        Task<Administradores> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO);
+        Task<bool> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO);
     }
 }

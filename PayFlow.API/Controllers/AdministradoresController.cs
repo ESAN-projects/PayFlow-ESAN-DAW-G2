@@ -61,6 +61,9 @@ namespace PayFlow.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAdministradores(int id, [FromBody] AdministradorListDTO administradorListDTO)
         {
+
+            Console.WriteLine("Entro a Controlador");
+
             if (id != administradorListDTO.AdministradorId)
             {
                 return BadRequest();
