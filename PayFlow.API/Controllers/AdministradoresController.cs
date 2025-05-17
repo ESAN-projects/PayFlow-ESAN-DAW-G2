@@ -48,7 +48,32 @@ namespace PayFlow.API.Controllers
             return CreatedAtAction(nameof(GetAdministradoresById), new { id = AdministradoresId }, administradores);
         }
 
-        // Delte Administradores
-        []
+        // Update Administradores
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAdministradores(int id, [FromBody] Administradores administradores)
+        {
+            if (id != administradores.AdministradorId)
+            {
+                return BadRequest();
+            }
+            var updated = await _administradoresRepository.UpdateAdministradoresAsync(administradores);
+            if (updated == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        // Delete Administradores
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAdministradores(int id)
+        {
+            var deleted = await _administradoresRepository.DeleteAdministradoresAsync(id);
+            if (deleted == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }

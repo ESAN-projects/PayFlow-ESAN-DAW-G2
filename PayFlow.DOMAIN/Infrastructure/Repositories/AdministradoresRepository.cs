@@ -33,6 +33,9 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         //Add Administradores
         public async Task<Administradores> AddAdministradoresAsync(Administradores administradores)
         {
+            if (administradores == null)
+                throw new ArgumentNullException(nameof(administradores));
+
             administradores.EstadoAdministrador = "Activo";
             await _context.Administradores.AddAsync(administradores);
             await _context.SaveChangesAsync();
@@ -40,21 +43,29 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         //Update Administradores
-        public async Task<Administradores> UpdateAdministradoresAsync(Administradores administradores)
+        /*public async Task<Administradores> UpdateAdministradoresAsync(Administradores administradores)
         {
             var existingAdministrador = await GetAdministradoresByIdAsync(administradores.AdministradorId);
             if (existingAdministrador != null)
+            {
 
                 existingAdministrador.Nombres = administradores.Nombres;
-            existingAdministrador.Apellidos = administradores.Apellidos;
-            existingAdministrador.CorreoElectronico = administradores.CorreoElectronico;
-            existingAdministrador.ContraseñaHash = administradores.ContraseñaHash;
-            existingAdministrador.FechaRegistro = DateTime.Now;
-            await _context.SaveChangesAsync();
+                existingAdministrador.Apellidos = administradores.Apellidos;
+                existingAdministrador.CorreoElectronico = administradores.CorreoElectronico;
+                existingAdministrador.ContraseñaHash = administradores.ContraseñaHash;
+                existingAdministrador.FechaRegistro = DateTime.Now;
+                existingAdministrador.EsSuperAdmin = administradores.EsSuperAdmin;
+                await _context.SaveChangesAsync();
+            }
             return existingAdministrador;
+        }*/
+        public async Task<Administradores> UpdateAdministradoresAsync(Administradores administradores)
+        {
+            _context.Administradores.Update(administradores);
+            await _context.SaveChangesAsync();
+            return administradores;
         }
-
-        //Delete Administradores
+        //Delete Administradores by id (borrado logico)
         public async Task<bool> DeleteAdministradoresAsync(int id)
         {
             var administradores = await GetAdministradoresByIdAsync(id);
@@ -68,19 +79,21 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return true;
         }
 
-        // Delete Administradores by id (remove)
-        public async Task<bool> RemoveAdministradoresAsync(int id)
+        
+
+        // Delete Administradores (borrado físico)
+        public async Task<bool> Delete2AdministradoresAsync(int id)
         {
             var administradores = await GetAdministradoresByIdAsync(id);
             if (administradores == null)
             {
                 return false;
             }
-            _context.Administradores.Remove(administradores);
+
+            _context.Administradores.Remove(administradores); 
             await _context.SaveChangesAsync();
             return true;
         }
-
 
     }
 }
