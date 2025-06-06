@@ -11,12 +11,7 @@ namespace PayFlow.API.Controllers
     [ApiController]
     public class AdministradoresController : ControllerBase
     {
-        // private readonly IAdministradoresRepository _administradoresRepository;
 
-        //public AdministradoresController(IAdministradoresRepository administradoresRepository)
-        //{
-        //    _administradoresRepository = administradoresRepository;
-        //}
 
         private readonly IAdministradorService _administradorService;
         public AdministradoresController(IAdministradorService administradorService)

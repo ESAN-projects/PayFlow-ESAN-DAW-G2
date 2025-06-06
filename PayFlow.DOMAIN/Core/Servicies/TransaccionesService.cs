@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Core.Entities;
+using PayFlow.DOMAIN.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PayFlow.DOMAIN.Core.DTOs;
-using PayFlow.DOMAIN.Core.Entities;
-using PayFlow.DOMAIN.Core.Interfaces;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -116,5 +117,6 @@ namespace PayFlow.DOMAIN.Core.Servicies
             });
             return transaccionesDTO;
         }
+        
+        }
     }
-}

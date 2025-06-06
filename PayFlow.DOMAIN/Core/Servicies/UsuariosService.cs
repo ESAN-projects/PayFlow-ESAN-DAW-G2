@@ -1,4 +1,5 @@
-﻿using PayFlow.DOMAIN.Core.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 
@@ -89,6 +90,19 @@ namespace PayFlow.DOMAIN.Core.Servicies
             }
             var result = await _usuariosRepository.DeleteUsuarioAsync(id);
             return result;
+        }
+        //Actualizar Perfil de Usuario
+        public async Task<bool> ActualizarPerfilAsync(int usuarioId, PerfilUpdateDTO dto)
+        {
+            var usuario = await _usuariosRepository.GetUsuarioByIdAsync(usuarioId);
+            if (usuario == null)
+                return false;
+            usuario.Nombres = dto.Nombres;
+            usuario.Apellidos = dto.Apellidos;
+            usuario.Dni = dto.Dni;
+            usuario.CorreoElectronico = dto.CorreoElectrónico;
+
+            return await _usuariosRepository.UpdateUsuarioAsync(usuario);
         }
     }
 }
