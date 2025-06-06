@@ -15,11 +15,8 @@ namespace PayFlow.API.Controllers
         {
             _usuariosService = usuariosService;
         }
-        [HttpPut]
-        public IActionResult Test()
-        {
-            return Ok("Funciona");
-        }
+        [HttpPut("actualizar")]
+        
         public async Task<IActionResult> ActualizarPerfil([FromBody] PerfilUpdateDTO dto)
         {
             int usuarioId = dto.UsuarioId;
