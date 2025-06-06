@@ -100,7 +100,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
             usuario.Nombres = dto.Nombres;
             usuario.Apellidos = dto.Apellidos;
             usuario.Dni = dto.Dni;
-            usuario.CorreoElectronico = dto.CorreoElectrónico;
+            usuario.CorreoElectronico = dto.CorreoElectronico;
 
             return await _usuariosRepository.UpdateUsuarioAsync(usuario);
         }

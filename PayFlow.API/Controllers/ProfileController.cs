@@ -9,18 +9,22 @@ namespace PayFlow.API.Controllers
     [ApiController]
     public class ProfileController : ControllerBase
     {
-        private readonly IUsuarioService _usuarioService;
+        private readonly IUsuariosService _usuariosService;
 
-        public ProfileController(IUsuarioService usuarioService)
+        public ProfileController(IUsuariosService usuariosService)
         {
-            _usuarioService = usuarioService;
+            _usuariosService = usuariosService;
         }
         [HttpPut]
+        public IActionResult Test()
+        {
+            return Ok("Funciona");
+        }
         public async Task<IActionResult> ActualizarPerfil([FromBody] PerfilUpdateDTO dto)
         {
             int usuarioId = dto.UsuarioId;
 
-            bool actualizado = await _usuarioService.ActualizarPerfilAsync(usuarioId, dto);
+            bool actualizado = await _usuariosService.ActualizarPerfilAsync(usuarioId, dto);
             if (!actualizado)
                 return NotFound("Usuario no encontrado.");
 

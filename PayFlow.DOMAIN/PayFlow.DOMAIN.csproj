@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\Interfaces\IUsuarioService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Core\Settings\" />
     <Folder Include="Infrastructure\Data\" />
     <Folder Include="Infrastructure\Shared\" />

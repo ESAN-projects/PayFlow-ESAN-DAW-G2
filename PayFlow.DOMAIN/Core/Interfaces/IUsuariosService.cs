@@ -9,5 +9,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<IEnumerable<UsuariosListDTO>> GetAllUsuariosAsync();
         Task<UsuariosListDTO?> GetUsuarioByIdAsync(int id);
         Task<bool> UpdateUsuarioAsync(UsuariosUpdateDTO usuarioUpdateDTO);
+        Task<bool> ActualizarPerfilAsync(int usuarioId, PerfilUpdateDTO dto);
     }
 }
