@@ -2,6 +2,7 @@
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
+using PayFlow.DOMAIN.Infrastructure.Repositories;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -104,5 +105,6 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
             return await _usuariosRepository.UpdateUsuarioAsync(usuario);
         }
+
     }
 }
