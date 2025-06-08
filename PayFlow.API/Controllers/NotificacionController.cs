@@ -5,7 +5,7 @@ using PayFlow.DOMAIN.Core.Interfaces;
 
 namespace PayFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class NotificacionController : ControllerBase
     {
@@ -14,62 +14,33 @@ namespace PayFlow.API.Controllers
         {
             _notificacionService = notificacionService;
         }
-        //Get all notificaciones
-        [HttpGet]
-        public async Task<IActionResult> GetAllNotificaciones()
+
+
+        //Get all notifications for a user
+        [HttpGet("Usuario/{usuarioId}")]
+        public async Task<IActionResult> ObtenerNotificacionesPorUsuario(int id)
         {
-            var notificaciones = await _notificacionService.GetAllNotificaciones();
+            if (id <= 0)
+            {
+                return BadRequest("ID de usuario inválido.");
+            }
+
+            var notificaciones = await _notificacionService.ObtenerNotificacionesPorUsuario(id);
+
+            if (notificaciones == null || !notificaciones.Any())
+            {
+                return NotFound("No se encontraron notificaciones para este usuario.");
+            }
+
             return Ok(notificaciones);
         }
-        //Get notificacion by id
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetNotificacionById(int id)
-        {
-            var notificacion = await _notificacionService.GetNotificacionById(id);
-            if (notificacion == null)
-            {
-                return NotFound();
-            }
-            return Ok(notificacion);
-        }
-        //Add notificacion
-        [HttpPost]
-        public async Task<IActionResult> AddNotificacion([FromBody] NotificacionCreateDTO data)
-        {
-            if (data == null)
-            {
-                return BadRequest();
-            }
-            var notificacionId = await _notificacionService.AddNotificacion(data);
-            return CreatedAtAction(nameof(GetNotificacionById), new { id = notificacionId }, data);
-        }
 
-        //Update notificacion
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateNotificacion(int id, [FromBody] NotificacionDTO data)
+        //Mark notification as read 
+        [HttpPost("MarcarComoLeido/{notificacionId}")]
+        public async Task<IActionResult> MarcarComoLeido(int notificacionId)
         {
-            if (id != data.NotificacionId)
-            {
-                return BadRequest();
-            }
-            var result = await _notificacionService.UpdateNotificacion(data);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
-
-        //Delete notificacion
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteNotificacion(int id)
-        {
-            var result = await _notificacionService.DeleteNotificacion(id);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
+            await _notificacionService.MarcarComoLeido(notificacionId);
+            return NoContent(); // 204 No Content
         }
 
     }

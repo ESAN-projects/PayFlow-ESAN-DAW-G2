@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PayFlow.DOMAIN.Core.Entities;
 
-public partial class Notificaciones
+public partial class Notificacion
 {
     public int NotificacionId { get; set; }
 
