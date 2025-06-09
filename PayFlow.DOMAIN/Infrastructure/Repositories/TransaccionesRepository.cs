@@ -74,5 +74,32 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         {
             return await _context.Transacciones.Where(c => c.CuentaId == cuentaId).ToListAsync();
         }
+
+        // Nuevo método para filtrar por usuario, estado y fechas
+        public async Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null)
+        {
+            var query = _context.Transacciones
+                .Include(t => t.Cuenta)
+                .Where(t => t.Cuenta.UsuarioId == usuarioId);
+
+            if (!string.IsNullOrEmpty(estado))
+                query = query.Where(t => t.Estado == estado);
+
+            if (fechaInicio.HasValue)
+                query = query.Where(t => t.FechaHora >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+            {
+                // Si la fechaFin no tiene hora, ajusta para incluir todo el día
+                var fin = fechaFin.Value;
+                if (fin.TimeOfDay == TimeSpan.Zero)
+                {
+                    fin = fin.Date.AddDays(1).AddTicks(-1); // 23:59:59.9999999
+                }
+                query = query.Where(t => t.FechaHora <= fin);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

@@ -50,7 +50,7 @@ public partial class PayflowContext : DbContext
                 .IsUnicode(false)
                 .HasDefaultValue("Activo");
             entity.Property(e => e.FechaRegistro)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql( "(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Nombres)
                 .HasMaxLength(100)

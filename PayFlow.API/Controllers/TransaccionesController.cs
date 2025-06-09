@@ -82,5 +82,16 @@ namespace PayFlow.API.Controllers
             }
             return Ok(transaccion);
         }
+        //Get transacciones by usuario, estado y fechas
+        [HttpGet("usuario/{usuarioId}")]
+        public async Task<IActionResult> GetTransaccionesByUsuario(int usuarioId, [FromQuery] string? estado = null, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
+        {
+            var transacciones = await _transaccionesService.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);
+            if (transacciones == null)
+            {
+                return NotFound();
+            }
+            return Ok(transacciones);
+        }
     }
 }
