@@ -27,6 +27,9 @@ builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
 builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
 builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
+builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
+builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
+
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -48,7 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseAuthentication(); // gregado
 app.UseAuthorization();
 
 app.MapControllers();
