@@ -3,6 +3,10 @@ using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +33,7 @@ builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
 builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
 builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
 builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
+builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
 
 
 //Add swagger
@@ -42,6 +47,26 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Solo para desarrollo
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -51,7 +76,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseAuthentication(); // gregado
+app.UseAuthentication(); // agregado
 app.UseAuthorization();
 
 app.MapControllers();
