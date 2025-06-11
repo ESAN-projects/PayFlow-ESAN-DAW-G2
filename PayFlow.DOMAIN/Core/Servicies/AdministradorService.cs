@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.HttpResults;
-using PayFlow.DOMAIN.Core.DTOs;
+﻿using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 
@@ -13,10 +7,12 @@ namespace PayFlow.DOMAIN.Core.Servicies
     public class AdministradorService : IAdministradorService
     {
         private readonly IAdministradoresRepository _administradoresRepository;
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AdministradorService(IAdministradoresRepository administradoresRepository)
+        public AdministradorService(IAdministradoresRepository administradoresRepository, JwtTokenGenerator jwtTokenGenerator)
         {
             _administradoresRepository = administradoresRepository;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
         //Get All ADM
         public async Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync()
@@ -89,5 +85,52 @@ namespace PayFlow.DOMAIN.Core.Servicies
         {
             return await _administradoresRepository.DeleteAdministradoresAsync(id);
         }
+
+        public async Task<AuthAdmResponseDTO> LoginAsync(LoginAdmDTO loginAdmDTO)
+        {
+            var administrador = await _administradoresRepository.GetAdministradorByEmailAsync(loginAdmDTO.CorreoElectronico);
+            if (administrador == null || administrador.EstadoAdministrador == "Inactivo")
+            {
+                return new AuthAdmResponseDTO
+                {
+                    Message = "Credenciales incorrectas."
+                };
+            }
+
+            var result = BCrypt.Net.BCrypt.Verify(loginAdmDTO.ContraseñaHash, administrador.ContraseñaHash);
+            if (!result)
+            {
+                return new AuthAdmResponseDTO
+                {
+                    Message = "Credenciales incorrectas."
+                };
+            }
+
+            // Generar JWT Token para Administrador
+            var token = _jwtTokenGenerator.GenerateJwtToken(administrador.CorreoElectronico, administrador.AdministradorId, "Administrador");
+
+            return new AuthAdmResponseDTO
+            {
+                Token = token,
+                Message = "Autenticación exitosa."
+            };
+        }
+
+        public async Task<string> ResetPasswordAsync(ResetPasswordAdmDTO resetPasswordAdmDTO)
+        {
+            var administrador = await _administradoresRepository.GetAdministradorByEmailAsync(resetPasswordAdmDTO.CorreoElectronico);
+            if (administrador == null || administrador.EstadoAdministrador == "Inactivo")
+            {
+                return "Administrador no encontrado o inactivo.";
+            }
+            // Actualizar el administrador en la base de datos
+            var result = await _administradoresRepository.ResetPassword(resetPasswordAdmDTO.CorreoElectronico, resetPasswordAdmDTO.NuevaContraseña);
+            if (!result)
+            {
+                return "Error al restablecer la contraseña.";
+            }
+            return "Contraseña restablecida con éxito.";
+        }
+
     }
 }

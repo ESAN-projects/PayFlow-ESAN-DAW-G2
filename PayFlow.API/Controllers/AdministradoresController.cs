@@ -11,13 +11,6 @@ namespace PayFlow.API.Controllers
     [ApiController]
     public class AdministradoresController : ControllerBase
     {
-        // private readonly IAdministradoresRepository _administradoresRepository;
-
-        //public AdministradoresController(IAdministradoresRepository administradoresRepository)
-        //{
-        //    _administradoresRepository = administradoresRepository;
-        //}
-
         private readonly IAdministradorService _administradorService;
         public AdministradoresController(IAdministradorService administradorService)
         {
@@ -87,5 +80,38 @@ namespace PayFlow.API.Controllers
             }
             return NoContent();
         }
+
+        // Login administrador
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginAdmDTO loginAmdDTO)
+        {
+            if (loginAmdDTO == null)
+            {
+                return BadRequest();
+            }
+            var authResponse = await _administradorService.LoginAsync(loginAmdDTO);
+            if (authResponse == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(authResponse);
+        }
+
+        // Restablecer contraseña administrador
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordAdmDTO resetPasswordAdmDTO)
+        {
+            if (resetPasswordAdmDTO == null)
+            {
+                return BadRequest();
+            }
+            var result = await _administradorService.ResetPasswordAsync(resetPasswordAdmDTO);
+            if (result == "Administrador no encontrado o inactivo.")
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
     }
 }

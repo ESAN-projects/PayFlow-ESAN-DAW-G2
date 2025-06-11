@@ -36,4 +36,22 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public string CorreoElectronico { get; set; }
         public string ContraseñaHash { get; set; }
     }
+
+    public class LoginAdmDTO
+    {
+        public string CorreoElectronico { get; set; }
+        public string ContraseñaHash { get; set; }
+    }
+
+    public class AuthAdmResponseDTO
+    {
+        public string Token { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class ResetPasswordAdmDTO
+    {
+        public string CorreoElectronico { get; set; }
+        public string NuevaContraseña { get; set; }
+    }
 }
