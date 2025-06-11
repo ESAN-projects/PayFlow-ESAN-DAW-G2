@@ -47,6 +47,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configuración de autenticación JWT
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
