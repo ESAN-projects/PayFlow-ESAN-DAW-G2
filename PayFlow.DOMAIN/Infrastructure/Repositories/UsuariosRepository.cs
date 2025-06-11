@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
@@ -61,6 +62,29 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                 return false;
             }
             usuario.EstadoUsuario = "Inactivo";
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        //get usuario by email
+        public async Task<Usuarios?> GetUsuarioByEmailAsync(string email)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == email && x.EstadoUsuario == "Activo");
+        }
+
+        //reset password
+        public async Task<bool> ResetPassword(string correo, string newPassword)
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == correo);
+            if (usuario == null)
+            {
+                return false;
+            }
+
+            // Generar un nuevo hash de contraseña
+            var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            usuario.ContraseñaHash = newPasswordHash;
             _context.Usuarios.Update(usuario);
             await _context.SaveChangesAsync();
             return true;

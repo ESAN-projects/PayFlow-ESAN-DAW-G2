@@ -1,15 +1,22 @@
-﻿using PayFlow.DOMAIN.Core.DTOs;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
     public class UsuariosService : IUsuariosService
     {
         private readonly IUsuariosRepository _usuariosRepository;
-        public UsuariosService(IUsuariosRepository usuariosRepository)
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
+        public UsuariosService(IUsuariosRepository usuariosRepository, JwtTokenGenerator jwtTokenGenerator)
         {
             _usuariosRepository = usuariosRepository;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         //Get all usuarios
@@ -89,6 +96,54 @@ namespace PayFlow.DOMAIN.Core.Servicies
             }
             var result = await _usuariosRepository.DeleteUsuarioAsync(id);
             return result;
+        }
+
+        //Login usuarios
+        public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO)
+        {
+            var usuario = await _usuariosRepository.GetUsuarioByEmailAsync(loginDTO.CorreoElectronico);
+            if (usuario == null || usuario.EstadoUsuario == "Inactivo")
+            {
+                return new AuthResponseDTO
+                {
+                    Message = "Credenciales incorrectas."
+                };
+            }
+
+            var result = BCrypt.Net.BCrypt.Verify(loginDTO.ContraseñaHash, usuario.ContraseñaHash);
+
+            if (!result)  // Si result es false, las credenciales son incorrectas.
+            {
+                return new AuthResponseDTO
+                {
+                    Message = "Credenciales incorrectas."
+                };
+            }
+
+            var token = _jwtTokenGenerator.GenerateJwtToken(usuario.CorreoElectronico, usuario.UsuarioId, "Usuario");
+
+            return new AuthResponseDTO
+            {
+                Token = token,
+                Message = "Autenticación exitosa."
+            };
+        }
+
+        //Resetear contraseña con enlace de contraseña
+        public async Task<string> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
+        {
+            var usuario = await _usuariosRepository.GetUsuarioByEmailAsync(resetPasswordDTO.CorreoElectronico);
+            if (usuario == null || usuario.EstadoUsuario == "Inactivo")
+            {
+                return "Usuario no encontrado o inactivo.";
+            }
+            // Actualizar el usuario en la base de datos
+            var result = await _usuariosRepository.ResetPassword(resetPasswordDTO.CorreoElectronico, resetPasswordDTO.NuevaContraseña);
+            if (!result)
+            {
+                return "Error al restablecer la contraseña.";
+            }
+            return "Contraseña restablecida con éxito.";
         }
     }
 }
