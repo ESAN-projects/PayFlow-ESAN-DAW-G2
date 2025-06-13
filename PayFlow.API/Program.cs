@@ -4,9 +4,6 @@ using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,11 +32,11 @@ builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
 builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
 builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
 builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
-
 builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
+builder.Services.AddHttpContextAccessor();
 
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -71,6 +68,32 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "PayFlow API",
         Version = "v1"
+    });
+
+    // Configura la autenticación JWT para Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        BearerFormat = "JWT",
+        Scheme = "Bearer",
+        Description = "Ingresa el token JWT con el prefijo 'Bearer '"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
     });
 });
 

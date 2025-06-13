@@ -4,7 +4,6 @@ namespace PayFlow.DOMAIN.Core.DTOs
 {
     public class RegistrarDepositosDTO
     {
-            public int CuentaID { get; set; }
             public decimal Monto { get; set; }
             public string Banco { get; set; }
             public IFormFile RutaVoucher { get; set; }
