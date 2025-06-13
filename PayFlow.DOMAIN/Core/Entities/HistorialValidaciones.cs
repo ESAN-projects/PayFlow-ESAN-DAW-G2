@@ -21,5 +21,6 @@ public partial class HistorialValidaciones
 
     public virtual Administradores Administrador { get; set; } = null!;
 
-    public virtual Transacciones Transaccion { get; set; } = null!;
+    public  Transacciones Transaccion { get; set; } = null!;
+    // public virtual Transacciones Transaccion { get; set; } = null!;
 }

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,38 @@ builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
 builder.Services.AddTransient<IRetiroService, RetiroService>();
+builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
+builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
+builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
+builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
+builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
+builder.Services.AddTransient<JwtTokenGenerator>();
+builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IDepositoService, DepositoService>();
+builder.Services.AddHttpContextAccessor();
+
+//Add JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(bearer => {
+
+    bearer.RequireHttpsMetadata = false;
+    bearer.SaveToken = true;
+    bearer.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true, // Habilita la validaci�n de expiraci�n
+        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraci�n
+    };
+});
+
+builder.Services.AddHttpClient();
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -35,6 +69,32 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "PayFlow API",
         Version = "v1"
+    });
+
+    // Configura la autenticación JWT para Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        BearerFormat = "JWT",
+        Scheme = "Bearer",
+        Description = "Ingresa el token JWT con el prefijo 'Bearer '"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
     });
 });
 
@@ -47,6 +107,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

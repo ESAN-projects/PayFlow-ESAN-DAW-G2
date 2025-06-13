@@ -10,5 +10,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<List<Administradores>> GetAllAdministradoresAsync();
         Task<bool> RemoveAdministradoresAsync(int id);
         Task<bool> UpdateAdministradoresAsync(Administradores administrador);
+        Task<Administradores?> GetAdministradorByEmailAsync(string email);
+        Task<bool> ResetPassword(string correo, string newPassword);
     }
 }

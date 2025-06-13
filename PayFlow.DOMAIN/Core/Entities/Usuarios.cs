@@ -23,5 +23,5 @@ public partial class Usuarios
 
     public virtual Cuentas? Cuentas { get; set; }
 
-    public virtual ICollection<Notificaciones> Notificaciones { get; set; } = new List<Notificaciones>();
+    public virtual ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();
 }

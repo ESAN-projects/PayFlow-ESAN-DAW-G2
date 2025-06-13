@@ -10,5 +10,8 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<AdministradorListDTO> GetAdministradoresByIdAsync(int id);
         Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync();
         Task<bool> UpdateAdministradoresAsync(AdministradorListDTO administradorListDTO);
+        Task<AuthAdmResponseDTO> LoginAsync(LoginAdmDTO loginAdmDTO);
+        Task<string> ResetPasswordAsync(ResetPasswordAdmDTO resetPasswordAdmDTO);
+        Task<bool> AceptarDepositoAsync(int transaccionId);
     }
 }

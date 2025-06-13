@@ -91,7 +91,28 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return true;
         }
 
+        // Obtener administrador por correo electrónico
+        public async Task<Administradores?> GetAdministradorByEmailAsync(string email)
+        {
+            return await _context.Administradores.FirstOrDefaultAsync(x => x.CorreoElectronico == email && x.EstadoAdministrador == "Activo");
+        }
 
+        // Restablecer contraseña
+        public async Task<bool> ResetPassword(string correo, string newPassword)
+        {
+            var administrador = await _context.Administradores.FirstOrDefaultAsync(x => x.CorreoElectronico == correo);
+            if (administrador == null)
+            {
+                return false;
+            }
+
+            // Generar un nuevo hash de contraseña
+            var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            administrador.ContraseñaHash = newPasswordHash;
+            _context.Administradores.Update(administrador);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
     }
 }

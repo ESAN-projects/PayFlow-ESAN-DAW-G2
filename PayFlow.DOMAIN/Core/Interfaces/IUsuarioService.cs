@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
-    public interface INotificacionService
+    public interface IUsuarioService
     {
-        Task<List<NotificacionDTO>> ObtenerNotificacionesPorUsuario(int usuarioId);
-        Task MarcarComoLeido(int notificacionId);
+        Task<bool> ActualizarPerfilAsync(int usuarioId, PerfilUpdateDTO dto);
     }
 }
