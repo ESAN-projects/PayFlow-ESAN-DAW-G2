@@ -41,4 +41,23 @@
         public string ContraseñaHash { get; set; }
         public string EstadoUsuario { get; set; }
     }
+
+    public class LoginDTO
+    {
+        public string CorreoElectronico { get; set; }
+        public string ContraseñaHash { get; set; }
+    }
+    
+    public class AuthResponseDTO
+    {
+        public string Token { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class ResetPasswordDTO
+    {
+        public string CorreoElectronico { get; set; }
+        public string NuevaContraseña { get; set; }
+        //public string Message { get; set; }
+    }
 }

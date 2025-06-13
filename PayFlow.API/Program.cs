@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
@@ -29,12 +30,38 @@ builder.Services.AddTransient<IAdministradoresRepository, AdministradoresReposit
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
+<<<<<<< HEAD
 builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
 builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
 builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
 builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
 builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
 
+=======
+builder.Services.AddTransient<JwtTokenGenerator>();
+
+//Add JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(bearer => {
+
+    bearer.RequireHttpsMetadata = false;
+    bearer.SaveToken = true;
+    bearer.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true, // Habilita la validación de expiración
+        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiración
+    };
+});
+
+builder.Services.AddHttpClient();
+>>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -78,7 +105,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+<<<<<<< HEAD
 app.UseAuthentication(); // agregado
+=======
+
+app.UseAuthentication();
+
+>>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
 app.UseAuthorization();
 
 app.MapControllers();

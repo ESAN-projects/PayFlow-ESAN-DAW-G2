@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Interfaces;
 
@@ -15,6 +16,7 @@ namespace PayFlow.API.Controllers
         }
 
         // get all usuarios
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsuarios()
         {
@@ -68,6 +70,38 @@ namespace PayFlow.API.Controllers
         {
             var result = await _usuariosService.DeleteUsuarioAsync(id);
             if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        //login usuarios
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        {
+            if (loginDTO == null)
+            {
+                return BadRequest();
+            }
+            var authResponse = await _usuariosService.LoginAsync(loginDTO);
+            if (authResponse == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(authResponse);
+        }
+
+        //Reset password usuarios
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
+        {
+            if (resetPasswordDTO == null)
+            {
+                return BadRequest();
+            }
+            var result = await _usuariosService.ResetPasswordAsync(resetPasswordDTO);
+            if (result is NotFoundResult)
             {
                 return NotFound();
             }
