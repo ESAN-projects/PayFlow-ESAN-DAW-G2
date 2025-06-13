@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
-=======
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PayFlow.DOMAIN.Core.DTOs;
-using PayFlow.DOMAIN.Core.Entities;
-using PayFlow.DOMAIN.Core.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
->>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -105,7 +99,6 @@ namespace PayFlow.DOMAIN.Core.Servicies
             var result = await _usuariosRepository.DeleteUsuarioAsync(id);
             return result;
         }
-<<<<<<< HEAD
         //Actualizar Perfil de Usuario
         public async Task<bool> ActualizarPerfilAsync(int usuarioId, PerfilUpdateDTO dto)
         {
@@ -120,7 +113,6 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return await _usuariosRepository.UpdateUsuarioAsync(usuario);
         }
 
-=======
 
         //Login usuarios
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO)
@@ -169,6 +161,5 @@ namespace PayFlow.DOMAIN.Core.Servicies
             }
             return "Contraseña restablecida con éxito.";
         }
->>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
     }
 }

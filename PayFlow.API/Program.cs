@@ -30,14 +30,12 @@ builder.Services.AddTransient<IAdministradoresRepository, AdministradoresReposit
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
-<<<<<<< HEAD
 builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
 builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
 builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
 builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
 builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
 
-=======
 builder.Services.AddTransient<JwtTokenGenerator>();
 
 //Add JWT Authentication
@@ -55,13 +53,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ValidateLifetime = true, // Habilita la validación de expiración
-        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiración
+        ValidateLifetime = true, // Habilita la validaciï¿½n de expiraciï¿½n
+        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraciï¿½n
     };
 });
 
 builder.Services.AddHttpClient();
->>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -74,7 +71,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configuración de autenticación JWT
+// Configuraciï¿½n de autenticaciï¿½n JWT
 
 builder.Services.AddAuthentication(options =>
 {
@@ -105,13 +102,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-<<<<<<< HEAD
-app.UseAuthentication(); // agregado
-=======
 
 app.UseAuthentication();
 
->>>>>>> bb7536d3585a20b6fc434edcd3b09fcf90c48232
 app.UseAuthorization();
 
 app.MapControllers();
