@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Interfaces;
 
@@ -15,6 +16,7 @@ namespace PayFlow.API.Controllers
         }
 
         // get all usuarios
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsuarios()
         {
@@ -23,6 +25,7 @@ namespace PayFlow.API.Controllers
         }
 
         //get by id usuarios
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
@@ -35,6 +38,7 @@ namespace PayFlow.API.Controllers
         }
 
         //add usuarios
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddUsuario([FromBody] UsuariosCreateDTO usuarioCreateDTO)
         {
@@ -47,6 +51,7 @@ namespace PayFlow.API.Controllers
         }
 
         //update usuarios
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuariosUpdateDTO usuarioUpdateDTO)
         {
@@ -63,11 +68,44 @@ namespace PayFlow.API.Controllers
         }
 
         //delete usuarios
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var result = await _usuariosService.DeleteUsuarioAsync(id);
             if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        //login usuarios
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        {
+            if (loginDTO == null)
+            {
+                return BadRequest();
+            }
+            var authResponse = await _usuariosService.LoginAsync(loginDTO);
+            if (authResponse == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(authResponse);
+        }
+
+        //Reset password usuarios
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
+        {
+            if (resetPasswordDTO == null)
+            {
+                return BadRequest();
+            }
+            var result = await _usuariosService.ResetPasswordAsync(resetPasswordDTO);
+            if (result is NotFoundResult)
             {
                 return NotFound();
             }
