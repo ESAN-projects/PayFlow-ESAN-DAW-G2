@@ -15,11 +15,12 @@ namespace PayFlow.DOMAIN.Core.Servicies
     public class RetiroService : IRetiroService
     {
         public readonly ITransaccionesRepository _transaccionesRepository;
+        public readonly INotificacionService _notificacionService;
         // private readonly ICuentasRepository _cuentasRepository;
-        public RetiroService(ITransaccionesRepository transaccionesRepository)
+        public RetiroService(ITransaccionesRepository transaccionesRepository, INotificacionService notificacionService)
         {
             _transaccionesRepository = transaccionesRepository;
-            // _cuentasRepository = cuentasRepository;
+            _notificacionService = notificacionService;
         }
 
         
@@ -50,6 +51,13 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 return -1; // Indicate an error with invalid data
             }
 
+            var estado = "Aceptado"; // Default state for the transaction
+
+            if (retiroCreateDTO.Monto > 100000)
+            {
+                estado = "Pendiente"; // If the amount is greater than 100000, set state to "Pendiente"
+            }
+
             /*
             var cuenta = await _cuentasRepository.GetCuentaById(retiroCreateDTO.CuentaId);
             if (cuenta == null)
@@ -66,11 +74,28 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 TipoTransaccion = "Retiro",
                 Monto = retiroCreateDTO.Monto,
                 FechaHora = DateTime.Now,
-                Estado = "Aceptado",
+                Estado = estado,
                 Iporigen = Iporigen
             };
 
-            return await _transaccionesRepository.AddTransaccion(transaccion);
+            var transactionId = await _transaccionesRepository.AddTransaccion(transaccion);
+
+            if (retiroCreateDTO.Monto > 100000)
+            {
+                // registramos mensaje de notificación
+                var notificacion = new NotificacionCreateDTO
+                {
+                    UsuarioId = 1, //cuenta.UsuarioId, // Assuming you have the user ID from the cuenta object
+                    TransaccionId = transactionId,
+                    TipoNotificacion = "Alerta",
+                    Mensaje = "Retiro pendiente de aprobación por monto elevado.",
+                    FechaHora = DateTime.Now,
+                    Estado = "No Leido"
+                };
+                await _notificacionService.AddNotificacion(notificacion);
+            }
+
+            return transactionId;
         }
     }
 }
