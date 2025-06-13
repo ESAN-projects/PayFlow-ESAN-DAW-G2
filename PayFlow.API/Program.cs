@@ -74,28 +74,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configuraci�n de autenticaci�n JWT
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false; // Solo para desarrollo
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
