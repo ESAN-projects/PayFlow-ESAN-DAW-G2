@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Interfaces;
+using System.Security.Claims;
 
 namespace PayFlow.API.Controllers
 {
@@ -16,12 +17,20 @@ namespace PayFlow.API.Controllers
             _dashboardService = dashboardService;
         }
 
-        // GET: api/dashboard/{usuarioId}
-        [HttpGet("{usuarioId}")]
-        public async Task<ActionResult<DashboardDTO>> GetDashboard(int usuarioId)
+        // Obtener el ID del usuario autenticado desde el token JWT (claim NameIdentifier)
+        [HttpGet]
+        public async Task<ActionResult<DashboardDTO>> GetDashboard()
         {
             try
             {
+                // Obtener el ID del usuario autenticado desde el token
+                var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (usuarioIdClaim == null)
+                    return Unauthorized(new { mensaje = "No se pudo identificar al usuario." });
+
+                int usuarioId = int.Parse(usuarioIdClaim.Value);
+
                 var dashboard = await _dashboardService.ObtenerDashboardAsync(usuarioId);
                 return Ok(dashboard);
             }
@@ -30,6 +39,6 @@ namespace PayFlow.API.Controllers
                 return NotFound(new { mensaje = ex.Message });
             }
         }
-        
+
     }
 }
