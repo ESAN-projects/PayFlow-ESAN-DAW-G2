@@ -54,8 +54,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ValidateLifetime = true, // Habilita la validaci�n de expiraci�n
-        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraci�n
+        ValidateLifetime = true, // Habilita la validacin de expiracin
+        RequireExpirationTime = true, // Requiere que el token tenga tiempo de expiracin
+        ClockSkew = TimeSpan.Zero
     };
 });
 

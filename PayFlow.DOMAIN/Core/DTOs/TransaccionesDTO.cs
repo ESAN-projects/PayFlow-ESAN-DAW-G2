@@ -45,26 +45,12 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public string? Ubicacion { get; set; }
     }
 
-    public class TransaccionesDrawCreateDTO
-    {
-        public int CuentaId { get; set; }
-        public decimal Monto { get; set; }
-    }
-
-    public class TransaccionesDrawDTO
-    {
-        public int TransaccionId { get; set; }
-        public int CuentaId { get; set; }
-        public decimal Monto { get; set; }
-        public string? Iporigen { get; set; }
-    }
     public class TransaccionResumenDTO
     {
         public DateTime Fecha { get; set; }
         public string TipoTransaccion { get; set; }  // "Depósito", "Retiro", "Transferencia"
         public decimal Monto { get; set; }
         public string Estado { get; set; }
-        
     }
 
 }
