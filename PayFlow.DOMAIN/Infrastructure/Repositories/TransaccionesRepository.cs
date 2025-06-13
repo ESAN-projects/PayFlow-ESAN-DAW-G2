@@ -74,23 +74,5 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         {
             return await _context.Transacciones.Where(c => c.CuentaId == cuentaId).ToListAsync();
         }
-
-        // Obtener el último número de operación registrado
-        public async Task<int?> GetUltimoNumeroOperacionAsync()
-        {
-            var lastTransaccion = await _context.Transacciones
-                                             .OrderByDescending(t => t.TransaccionId)
-                                             .FirstOrDefaultAsync();
-            if (lastTransaccion == null)
-            {
-                return 1242; // Si no hay registros, se empieza desde el número OP1243
-            }
-
-            var numeroOperacion = lastTransaccion.NumeroOperacion;
-            // Extraer el número de operación (después de "OP")
-            var numero = int.Parse(numeroOperacion.Substring(2));
-
-            return numero;
-        }
     }
 }

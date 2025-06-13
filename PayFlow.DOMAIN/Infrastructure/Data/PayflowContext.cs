@@ -20,7 +20,7 @@ public partial class PayflowContext : DbContext
 
     public virtual DbSet<HistorialValidaciones> HistorialValidaciones { get; set; }
 
-    public virtual DbSet<Notificacion> Notificaciones { get; set; }
+    public virtual DbSet<Notificaciones> Notificaciones { get; set; }
 
     public virtual DbSet<Transacciones> Transacciones { get; set; }
 
@@ -111,7 +111,7 @@ public partial class PayflowContext : DbContext
                 .HasConstraintName("FK_Validaciones_Transacciones");
         });
 
-        modelBuilder.Entity<Notificacion>(entity =>
+        modelBuilder.Entity<Notificaciones>(entity =>
         {
             entity.HasKey(e => e.NotificacionId).HasName("PK__Notifica__BCC120C45278CBAD");
 
