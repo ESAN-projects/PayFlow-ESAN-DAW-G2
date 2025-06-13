@@ -51,7 +51,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             existingTransaccion.CuentaDestinoId = transaccion.CuentaDestinoId;
             existingTransaccion.Iporigen = transaccion.Iporigen;
             existingTransaccion.Ubicacion = transaccion.Ubicacion;
-            //_context.Transacciones.Update(existingTransaccion);
+            _context.Transacciones.Update(existingTransaccion);
             await _context.SaveChangesAsync();
             return true;
         }
