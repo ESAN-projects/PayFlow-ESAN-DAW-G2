@@ -25,6 +25,7 @@ namespace PayFlow.API.Controllers
         }
 
         //get by id usuarios
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
@@ -37,6 +38,7 @@ namespace PayFlow.API.Controllers
         }
 
         //add usuarios
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddUsuario([FromBody] UsuariosCreateDTO usuarioCreateDTO)
         {
@@ -49,6 +51,7 @@ namespace PayFlow.API.Controllers
         }
 
         //update usuarios
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuariosUpdateDTO usuarioUpdateDTO)
         {
@@ -65,6 +68,7 @@ namespace PayFlow.API.Controllers
         }
 
         //delete usuarios
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
@@ -77,6 +81,7 @@ namespace PayFlow.API.Controllers
         }
 
         //login usuarios
+        [Authorize]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
@@ -93,6 +98,7 @@ namespace PayFlow.API.Controllers
         }
 
         //Reset password usuarios
+        [Authorize]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {

@@ -27,6 +27,9 @@ builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
 builder.Services.AddTransient<JwtTokenGenerator>();
+builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IDepositoService, DepositoService>();
 
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>

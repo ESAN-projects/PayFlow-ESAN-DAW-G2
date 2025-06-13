@@ -1,6 +1,7 @@
 ﻿using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
+using PayFlow.DOMAIN.Infrastructure.Repositories;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -8,11 +9,15 @@ namespace PayFlow.DOMAIN.Core.Servicies
     {
         private readonly IAdministradoresRepository _administradoresRepository;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly ITransaccionesRepository _transaccionesRepository;
+        private readonly ICuentasRepository _cuentasRepository;
 
-        public AdministradorService(IAdministradoresRepository administradoresRepository, JwtTokenGenerator jwtTokenGenerator)
+        public AdministradorService(IAdministradoresRepository administradoresRepository, JwtTokenGenerator jwtTokenGenerator,ITransaccionesRepository transaccionesRepository, ICuentasRepository cuentasRepository)
         {
             _administradoresRepository = administradoresRepository;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _transaccionesRepository = transaccionesRepository;
+            _cuentasRepository = cuentasRepository;
         }
         //Get All ADM
         public async Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync()
@@ -130,6 +135,43 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 return "Error al restablecer la contraseña.";
             }
             return "Contraseña restablecida con éxito.";
+        }
+
+        public async Task<bool> AceptarDepositoAsync(int transaccionId)
+        {
+            // Obtener la transacción pendiente
+            var transaccion = await _transaccionesRepository.GetTransaccionById(transaccionId);
+            if (transaccion == null || transaccion.Estado != "Pendiente")
+            {
+                throw new Exception("La transacción no está pendiente o no existe.");
+            }
+
+            // Cambiar el estado de la transacción a "Aceptado"
+            transaccion.Estado = "Aceptado";
+            var resultTransaccion = await _transaccionesRepository.UpdateTransaccion(transaccion);
+
+            if (!resultTransaccion)
+            {
+                throw new Exception("No se pudo actualizar el estado de la transacción.");
+            }
+
+            // Obtener la cuenta asociada
+            var cuenta = await _cuentasRepository.GetCuentaByIdAsync(transaccion.CuentaId);
+            if (cuenta == null)
+            {
+                throw new Exception("Cuenta no encontrada.");
+            }
+
+            // Actualizar el saldo de la cuenta con el monto de la transacción
+            cuenta.Saldo += transaccion.Monto;
+            var resultCuenta = await _cuentasRepository.UpdateCuentaAsync(cuenta);
+
+            if (!resultCuenta)
+            {
+                throw new Exception("No se pudo actualizar el saldo de la cuenta.");
+            }
+
+            return true; // Indica que el depósito ha sido aceptado y procesado correctamente.
         }
 
     }
