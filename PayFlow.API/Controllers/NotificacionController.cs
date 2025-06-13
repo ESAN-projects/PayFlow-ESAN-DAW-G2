@@ -5,7 +5,7 @@ using PayFlow.DOMAIN.Core.Interfaces;
 
 namespace PayFlow.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class NotificacionController : ControllerBase
     {
@@ -14,6 +14,35 @@ namespace PayFlow.API.Controllers
         {
             _notificacionService = notificacionService;
         }
+
+
+        //Get all notifications for a user
+        [HttpGet("Usuario/{usuarioId}")]
+        public async Task<IActionResult> ObtenerNotificacionesPorUsuario(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("ID de usuario inválido.");
+            }
+
+            var notificaciones = await _notificacionService.ObtenerNotificacionesPorUsuario(id);
+
+            if (notificaciones == null || !notificaciones.Any())
+            {
+                return NotFound("No se encontraron notificaciones para este usuario.");
+            }
+
+            return Ok(notificaciones);
+        }
+
+        //Mark notification as read 
+        [HttpPost("MarcarComoLeido/{notificacionId}")]
+        public async Task<IActionResult> MarcarComoLeido(int notificacionId)
+        {
+            await _notificacionService.MarcarComoLeido(notificacionId);
+            return NoContent(); // 204 No Content
+        }
+
         //Get all notificaciones
         [HttpGet]
         public async Task<IActionResult> GetAllNotificaciones()

@@ -1,58 +1,136 @@
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Core.Interfaces;
-using PayFlow.DOMAIN.Core.Servicies;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using PayFlow.DOMAIN.Core.Entities;
+using PayFlow.DOMAIN.Core.DTOs;
 
 namespace PayFlow.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class AdministradoresController : ControllerBase
     {
-        private readonly IAdministradoresService _administradoresService;
-        public AdministradoresController(IAdministradoresService administradoresService)
+        private readonly IAdministradorService _administradorService;
+        public AdministradoresController(IAdministradorService administradorService)
         {
-            _administradoresService = administradoresService;
+            _administradorService = administradorService;
         }
 
+
+        // GET all Administradores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AdministradoresListDTO>>> GetAll()
+        public async Task<IActionResult> GetAllAdministradores()
         {
-            var result = await _administradoresService.GetAllAdministradoresAsync();
-            return Ok(result);
+            var administradores = await _administradorService.GetAllAdministradoresAsync();
+            return Ok(administradores);
         }
 
+        // GET Administrador by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdministradoresListDTO>> GetById(int id)
+        public async Task<IActionResult> GetAdministradoresById(int id)
         {
-            var result = await _administradoresService.GetAdministradorByIdAsync(id);
-            if (result == null) return NotFound();
-            return Ok(result);
+            var administradores = await _administradorService.GetAdministradoresByIdAsync(id);
+            if (administradores == null)
+            {
+                return NotFound();
+            }
+            return Ok(administradores);
         }
-
+        // Add Administradores
         [HttpPost]
-        public async Task<ActionResult<int>> Create([FromBody] AdministradoresCreateDTO dto)
+        public async Task<IActionResult> AddAdministradores([FromBody] AdministradorCreateDTO administradorCreateDTO)
         {
-            var id = await _administradoresService.AddAdministradorAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id }, id);
+            if (administradorCreateDTO == null)
+            {
+                return BadRequest();
+            }
+            var AdministradoresId = await _administradorService.AddAdministradoresAsync(administradorCreateDTO);
+            return CreatedAtAction(nameof(GetAdministradoresById), new { id = AdministradoresId }, administradorCreateDTO);
         }
 
-        [HttpPut]
-        public async Task<ActionResult> Update([FromBody] AdministradoresUpdateDTO dto)
+        // Update Administradores
+        //Check it out
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAdministradores(int id, [FromBody] AdministradorListDTO administradorListDTO)
         {
-            var updated = await _administradoresService.UpdateAdministradorAsync(dto);
-            if (!updated) return NotFound();
+
+            Console.WriteLine("Entro a Controlador");
+
+            if (id != administradorListDTO.AdministradorId)
+            {
+                return BadRequest();
+            }
+            var updated = await _administradorService.UpdateAdministradoresAsync(administradorListDTO);
+            if (!updated)
+            {
+                return NotFound();
+            }
             return NoContent();
         }
 
+        // Delete Administradores Logico
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAdministradores(int id)
         {
-            var deleted = await _administradoresService.DeleteAdministradorAsync(id);
-            if (!deleted) return NotFound();
+            var deleted = await _administradorService.DeleteAdministradoresAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
             return NoContent();
         }
+
+        // Login administrador
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginAdmDTO loginAmdDTO)
+        {
+            if (loginAmdDTO == null)
+            {
+                return BadRequest();
+            }
+            var authResponse = await _administradorService.LoginAsync(loginAmdDTO);
+            if (authResponse == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(authResponse);
+        }
+
+        // Restablecer contraseña administrador
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordAdmDTO resetPasswordAdmDTO)
+        {
+            if (resetPasswordAdmDTO == null)
+            {
+                return BadRequest();
+            }
+            var result = await _administradorService.ResetPasswordAsync(resetPasswordAdmDTO);
+            if (result == "Administrador no encontrado o inactivo.")
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        // Endpoint para obtener aporbar deposito por un administrador autenticado
+        [HttpPost("aceptar-deposito/{transaccionId}")]
+        public async Task<IActionResult> AceptarDeposito(int transaccionId)
+        {
+            try
+            {
+                var result = await _administradorService.AceptarDepositoAsync(transaccionId);
+                if (result)
+                {
+                    return Ok(new { Message = "Depósito aceptado y saldo actualizado." });
+                }
+                return BadRequest(new { Message = "Error al aceptar el depósito." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
     }
 }

@@ -1,12 +1,18 @@
-﻿using PayFlow.DOMAIN.Core.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.DTOs
 {
+    public class NotificacionxUsuarioDTO
+    {
+        public int NotificacionID { get; set; }
+        public int TransaccionID { get; set; }
+        public string TipoTransaccion { get; set; }
+        public decimal Monto { get; set; }
+        public DateTime FechaHora { get; set; }
+        public string Mensaje { get; set; }
+        public String Estado { get; set; }
+    }
+
     public class NotificacionDTO
     {
         public int NotificacionId { get; set; }

@@ -4,10 +4,13 @@ namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface IAdministradoresRepository
     {
-        Task<int> AddAdministradorAsync(Administradores administrador);
-        Task<bool> DeleteAdministradorAsync(int id);
-        Task<Administradores?> GetAdministradorByIdAsync(int id);
-        Task<IEnumerable<Administradores>> GetAllAdministradoresAsync();
-        Task<bool> UpdateAdministradorAsync(Administradores administrador);
+        Task<Administradores> AddAdministradoresAsync(Administradores administradores);
+        Task<bool> DeleteAdministradoresAsync(int id);
+        Task<Administradores> GetAdministradoresByIdAsync(int id);
+        Task<List<Administradores>> GetAllAdministradoresAsync();
+        Task<bool> RemoveAdministradoresAsync(int id);
+        Task<bool> UpdateAdministradoresAsync(Administradores administrador);
+        Task<Administradores?> GetAdministradorByEmailAsync(string email);
+        Task<bool> ResetPassword(string correo, string newPassword);
     }
 }

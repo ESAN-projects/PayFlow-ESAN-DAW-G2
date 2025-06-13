@@ -9,5 +9,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<IEnumerable<Usuarios>> GetAllUsuariosAsync();
         Task<Usuarios?> GetUsuarioByIdAsync(int id);
         Task<bool> UpdateUsuarioAsync(Usuarios usuario);
+        Task<Usuarios?> GetUsuarioByEmailAsync(string email);
+        Task<bool> ResetPassword(string correo, string newPasswordHash);
     }
 }

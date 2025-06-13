@@ -1,10 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
@@ -16,29 +18,34 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             _context = context;
         }
 
-        // Obtener todos los administradores
-        public async Task<IEnumerable<Administradores>> GetAllAdministradoresAsync()
+        //Get all Administradores
+        public async Task<List<Administradores>> GetAllAdministradoresAsync()
         {
-            return await _context.Administradores.ToListAsync();
+            return await _context.Administradores.Where(c => c.EstadoAdministrador == "Activo").ToListAsync();
         }
 
-        // Obtener administrador por ID
-        public async Task<Administradores?> GetAdministradorByIdAsync(int id)
+        //Get Administradores by ID
+        public async Task<Administradores> GetAdministradoresByIdAsync(int id)
         {
-            return await _context.Administradores.FirstOrDefaultAsync(a => a.AdministradorId == id);
+            return await _context.Administradores.Where(c => c.AdministradorId == id && c.EstadoAdministrador == "Activo").FirstOrDefaultAsync();
         }
 
-        // Agregar administrador
-        public async Task<int> AddAdministradorAsync(Administradores administrador)
+        //Add Administradores
+        public async Task<Administradores> AddAdministradoresAsync(Administradores administradores)
         {
-            await _context.Administradores.AddAsync(administrador);
+            if (administradores == null)
+                throw new ArgumentNullException(nameof(administradores));
+
+            administradores.EstadoAdministrador = "Activo";
+            await _context.Administradores.AddAsync(administradores);
             await _context.SaveChangesAsync();
-            return administrador.AdministradorId;
+            return administradores;
         }
 
-        // Actualizar administrador
-        public async Task<bool> UpdateAdministradorAsync(Administradores administrador)
+        //Update Administradores
+        public async Task<bool> UpdateAdministradoresAsync(Administradores administrador)
         {
+
             var existingAdministrador = await _context.Administradores.FindAsync(administrador.AdministradorId);
             if (existingAdministrador == null)
             {
@@ -47,7 +54,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             existingAdministrador.Nombres = administrador.Nombres;
             existingAdministrador.Apellidos = administrador.Apellidos;
             existingAdministrador.CorreoElectronico = administrador.CorreoElectronico;
-            existingAdministrador.Contrase�aHash = administrador.Contrase�aHash;
+            existingAdministrador.ContraseñaHash = administrador.ContraseñaHash;
             existingAdministrador.EstadoAdministrador = administrador.EstadoAdministrador;
             existingAdministrador.FechaRegistro = administrador.FechaRegistro;
             existingAdministrador.EsSuperAdmin = administrador.EsSuperAdmin;
@@ -55,18 +62,57 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-        // Eliminar administrador
-        public async Task<bool> DeleteAdministradorAsync(int id)
+        //Delete Administradores
+        public async Task<bool> DeleteAdministradoresAsync(int id)
         {
-            var administrador = await _context.Administradores.FindAsync(id);
+            var administradores = await GetAdministradoresByIdAsync(id);
+            if (administradores == null)
+            {
+                return false;
+            }
+            administradores.EstadoAdministrador = "Inactivo";
+            _context.Administradores.Update(administradores);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Delete Administradores by id (borrado logico)
+        public async Task<bool> RemoveAdministradoresAsync(int id)
+        {
+            var administradores = await GetAdministradoresByIdAsync(id);
+            if (administradores == null)
+            {
+                return false;
+            }
+
+            administradores.EstadoAdministrador = "Inactivo";
+            _context.Administradores.Update(administradores);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Obtener administrador por correo electrónico
+        public async Task<Administradores?> GetAdministradorByEmailAsync(string email)
+        {
+            return await _context.Administradores.FirstOrDefaultAsync(x => x.CorreoElectronico == email && x.EstadoAdministrador == "Activo");
+        }
+
+        // Restablecer contraseña
+        public async Task<bool> ResetPassword(string correo, string newPassword)
+        {
+            var administrador = await _context.Administradores.FirstOrDefaultAsync(x => x.CorreoElectronico == correo);
             if (administrador == null)
             {
                 return false;
             }
-            _context.Administradores.Remove(administrador);
+
+            // Generar un nuevo hash de contraseña
+            var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            administrador.ContraseñaHash = newPasswordHash;
+            _context.Administradores.Update(administrador);
             await _context.SaveChangesAsync();
             return true;
         }
+
     }
 }

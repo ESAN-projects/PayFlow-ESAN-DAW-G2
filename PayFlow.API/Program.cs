@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,30 +26,66 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddTransient<IUsuariosService, UsuariosService>();
+builder.Services.AddTransient<IAdministradoresRepository, AdministradoresRepository>();
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
-builder.Services.AddTransient<IAdministradoresRepository, AdministradoresRepository>();
-builder.Services.AddTransient<IAdministradoresService, AdministradoresService>();
+builder.Services.AddTransient<IAdministradorService, AdministradorService>();
+builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
+builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
+builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
+builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
+builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
+builder.Services.AddTransient<JwtTokenGenerator>();
+builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IDepositoService, DepositoService>();
+builder.Services.AddHttpContextAccessor();
 
-// JWT Authentication configuration
+//Add JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+}).AddJwtBearer(bearer => {
+
+    bearer.RequireHttpsMetadata = false;
+    bearer.SaveToken = false;
+    bearer.TokenValidationParameters = new TokenValidationParameters
     {
+        
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
+        ValidateLifetime = true, // Habilita la validaciï¿½n de expiraciï¿½n
         ValidateIssuerSigningKey = true,
-        ValidIssuer = config["Jwt:Issuer"],
-        ValidAudience = config["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+        ValidIssuer = config["JWTSettings:Issuer"],
+        ValidAudience = config["JWTSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
+
+        //RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraciï¿½n
     };
 });
+
+builder.Services.AddHttpClient();
+
+// JWT Authentication configuration
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = config["Jwt:Issuer"],
+//        ValidAudience = config["Jwt:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+//    };
+//});
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -60,32 +97,31 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // Configuración de JWT para Swagger
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    // Configura la autenticaciÃ³n JWT para Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT"
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        BearerFormat = "JWT",
+        Scheme = "Bearer",
+        Description = "Ingresa el token JWT con el prefijo 'Bearer '"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            new string[] { }
         }
     });
-
 });
 
 var app = builder.Build();
@@ -99,6 +135,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

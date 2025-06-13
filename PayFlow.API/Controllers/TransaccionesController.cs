@@ -96,13 +96,17 @@ namespace PayFlow.API.Controllers
             return Ok(transacciones);
         }
 
+
         [Authorize]
         [HttpGet("mis-transacciones")]
         public async Task<IActionResult> GetMisTransacciones([FromQuery] string? estado = null, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
         {
+            Console.WriteLine("Ingresando a controlador");
+
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int usuarioId))
             {
+                Console.WriteLine("❌ Token no contiene el claim de ID de usuario.");
                 return Unauthorized();
             }
             var transacciones = await _transaccionesService.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);

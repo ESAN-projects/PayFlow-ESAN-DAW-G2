@@ -1,27 +1,56 @@
-﻿using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
     public class NotificacionService : INotificacionService
     {
-        private readonly INotificacionesRepository _notificacionRepository;
+        private readonly INotificacionesRepository _notificacionesRepository;
 
-        public NotificacionService(INotificacionesRepository notificacionRepository)
+        public NotificacionService(INotificacionesRepository notificacionesRepository)
         {
-            _notificacionRepository = notificacionRepository;
+            _notificacionesRepository = notificacionesRepository;
+        }
+
+        //Get all notifications for a user
+
+        public async Task<List<NotificacionxUsuarioDTO>> ObtenerNotificacionesPorUsuario(int usuarioId)
+        {
+            var entidades = await _notificacionesRepository.ObtenerNotificacionesPorUsuario(usuarioId);
+
+            var dtos = new List<NotificacionxUsuarioDTO>();
+
+            foreach (var entidad in entidades)
+            {
+                var dto = new NotificacionxUsuarioDTO
+                {
+                    NotificacionID = entidad.NotificacionID,
+                    TipoTransaccion = entidad.TipoTransaccion,
+                    Monto = entidad.Monto,
+                    FechaHora = entidad.FechaHora,
+                    Mensaje = entidad.Mensaje,
+                    Estado = entidad.Estado,
+                };
+
+                dtos.Add(dto);
+            }
+
+            return dtos;
+        }
+
+        //Mark a notification as read
+
+        public async Task MarcarComoLeido(int notificacionId)
+        {
+            await _notificacionesRepository.MarcarComoLeido(notificacionId);
         }
 
         public async Task<IEnumerable<NotificacionListDTO>> GetAllNotificaciones()
         {
-            var notificaciones = await _notificacionRepository.GetAllNotificaciones();
+            var notificaciones = await _notificacionesRepository.GetAllNotificaciones();
             var notificacionesDTO = notificaciones.Select(c => new NotificacionListDTO
             {
                 NotificacionId = c.NotificacionId,
@@ -39,7 +68,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
         public async Task<NotificacionListDTO> GetNotificacionById(int id)
         {
-            var notificacion = await _notificacionRepository.GetNotificacionById(id);
+            var notificacion = await _notificacionesRepository.GetNotificacionById(id);
             if (notificacion == null)
             {
                 return null;
@@ -58,7 +87,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
         public async Task<int> AddNotificacion(NotificacionCreateDTO data)
         {
-            var notificacion = new Notificaciones
+            var notificacion = new Notificacion
             {
                 UsuarioId = data.UsuarioId,
                 TransaccionId = data.TransaccionId,
@@ -68,14 +97,14 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 Estado = data.Estado,
 
             };
-            return await _notificacionRepository.AddNotificacion(notificacion);
+            return await _notificacionesRepository.AddNotificacion(notificacion);
 
         }
 
         //Update notificacion
         public async Task<bool> UpdateNotificacion(NotificacionDTO data)
         {
-            var notificacion = new Notificaciones
+            var notificacion = new Notificacion
             {
                 NotificacionId = data.NotificacionId,
                 UsuarioId = data.UsuarioId,
@@ -86,20 +115,23 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 Estado = data.Estado,
 
             };
-            return await _notificacionRepository.UpdateNotificacion(notificacion);
+            return await _notificacionesRepository.UpdateNotificacion(notificacion);
         }
 
 
         //Delete notificacion
         public async Task<bool> DeleteNotificacion(int id)
         {
-            var notificacion = await _notificacionRepository.GetNotificacionById(id);
+            var notificacion = await _notificacionesRepository.GetNotificacionById(id);
             if (notificacion == null)
             {
                 return false;
             }
-            return await _notificacionRepository.DeleteNotificacion(notificacion.NotificacionId);
+            return await _notificacionesRepository.DeleteNotificacion(notificacion.NotificacionId);
         }
+
+
 
     }
 }
+
