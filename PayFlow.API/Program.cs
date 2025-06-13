@@ -37,6 +37,9 @@ builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacion
 builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
 
 builder.Services.AddTransient<JwtTokenGenerator>();
+builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IDepositoService, DepositoService>();
 
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>

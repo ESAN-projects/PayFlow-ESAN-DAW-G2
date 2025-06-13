@@ -10,5 +10,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<IEnumerable<Transacciones>> GetTransaccionesByCuentaId(int cuentaId);
         Task<bool> RechazarTransaccion(int id);
         Task<bool> UpdateTransaccion(Transacciones transaccion);
+        Task<int?> GetUltimoNumeroOperacionAsync();
     }
 }

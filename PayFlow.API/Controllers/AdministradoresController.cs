@@ -113,5 +113,24 @@ namespace PayFlow.API.Controllers
             return NoContent();
         }
 
+        // Endpoint para obtener aporbar deposito por un administrador autenticado
+        [HttpPost("aceptar-deposito/{transaccionId}")]
+        public async Task<IActionResult> AceptarDeposito(int transaccionId)
+        {
+            try
+            {
+                var result = await _administradorService.AceptarDepositoAsync(transaccionId);
+                if (result)
+                {
+                    return Ok(new { Message = "Depósito aceptado y saldo actualizado." });
+                }
+                return BadRequest(new { Message = "Error al aceptar el depósito." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
     }
 }
