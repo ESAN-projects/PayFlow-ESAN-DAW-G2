@@ -1,13 +1,12 @@
-﻿using PayFlow.DOMAIN.Core.Entities;
+﻿using PayFlow.DOMAIN.Core.DTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface INotificacionesRepository
     {
-        Task<int> AddNotificacion(Notificaciones notificacion);
-        Task<bool> DeleteNotificacion(int id);
-        Task<IEnumerable<Notificaciones>> GetAllNotificaciones();
-        Task<Notificaciones> GetNotificacionById(int id);
-        Task<bool> UpdateNotificacion(Notificaciones notificacion);
+        Task<List<NotificacionDTO>> ObtenerNotificacionesPorUsuario(int usuarioId);
+        Task MarcarComoLeido(int notificacionId);
     }
 }

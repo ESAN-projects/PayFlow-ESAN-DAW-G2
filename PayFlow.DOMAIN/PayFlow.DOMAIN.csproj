@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Core\Interfaces\IUsuarioService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Core\Settings\" />
     <Folder Include="Infrastructure\Data\" />
     <Folder Include="Infrastructure\Shared\" />
@@ -26,6 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+	  <PackageReference Include="ClosedXML" Version="0.101.0" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,10 @@ using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +30,12 @@ builder.Services.AddTransient<IAdministradoresRepository, AdministradoresReposit
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
+builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
+builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
+builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
+builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacionesRepository>();
+builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
+
 builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
@@ -46,8 +56,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ValidateLifetime = true, // Habilita la validación de expiración
-        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiración
+        ValidateLifetime = true, // Habilita la validaciï¿½n de expiraciï¿½n
+        RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraciï¿½n
     };
 });
 
@@ -63,6 +73,28 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+
+// Configuraciï¿½n de autenticaciï¿½n JWT
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Solo para desarrollo
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
 
 var app = builder.Build();
 

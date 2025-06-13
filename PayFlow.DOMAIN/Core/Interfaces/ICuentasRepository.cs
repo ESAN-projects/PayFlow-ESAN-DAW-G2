@@ -1,4 +1,9 @@
 ﻿using PayFlow.DOMAIN.Core.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
@@ -6,5 +11,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
     {
         Task<Cuentas> GetCuentaByIdAsync(int cuentaId);
         Task<bool> UpdateCuentaAsync(Cuentas cuenta);
+        Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId);
     }
 }
