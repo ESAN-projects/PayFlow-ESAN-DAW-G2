@@ -81,7 +81,6 @@ namespace PayFlow.API.Controllers
         }
 
         //login usuarios
-        [Authorize]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
@@ -98,7 +97,6 @@ namespace PayFlow.API.Controllers
         }
 
         //Reset password usuarios
-        [Authorize]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
