@@ -9,7 +9,13 @@ namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface INotificacionService
     {
-        Task<List<NotificacionDTO>> ObtenerNotificacionesPorUsuario(int usuarioId);
+        Task<List<NotificacionxUsuarioDTO>> ObtenerNotificacionesPorUsuario(int usuarioId);
         Task MarcarComoLeido(int notificacionId);
+
+        Task<int> AddNotificacion(NotificacionCreateDTO notificacionDTO);
+        Task<bool> DeleteNotificacion(int id);
+        Task<IEnumerable<NotificacionListDTO>> GetAllNotificaciones();
+        Task<NotificacionListDTO> GetNotificacionById(int id);
+        Task<bool> UpdateNotificacion(NotificacionDTO data);
     }
 }

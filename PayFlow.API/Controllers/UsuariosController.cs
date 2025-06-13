@@ -38,7 +38,6 @@ namespace PayFlow.API.Controllers
         }
 
         //add usuarios
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddUsuario([FromBody] UsuariosCreateDTO usuarioCreateDTO)
         {
@@ -82,7 +81,7 @@ namespace PayFlow.API.Controllers
 
         //login usuarios
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginDTO)
         {
             if (loginDTO == null)
             {

@@ -117,6 +117,24 @@ namespace PayFlow.DOMAIN.Core.Servicies
             });
             return transaccionesDTO;
         }
-        
+
+        // Nuevo método para filtrar por usuario, estado y fechas
+        public async Task<IEnumerable<TransaccionesListDTO>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null)
+        {
+            var transacciones = await _transaccionesRepository.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);
+            var transaccionesDTO = transacciones.Select(c => new TransaccionesListDTO
+            {
+                TransaccionId = c.TransaccionId,
+                CuentaId = c.CuentaId,
+                TipoTransaccion = c.TipoTransaccion,
+                Monto = c.Monto,
+                FechaHora = c.FechaHora,
+                Estado = c.Estado,
+                Iporigen = c.Iporigen,
+                Ubicacion = c.Ubicacion
+            });
+            return transaccionesDTO;
+
         }
     }
+}
