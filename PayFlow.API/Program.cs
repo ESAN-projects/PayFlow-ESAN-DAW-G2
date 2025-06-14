@@ -77,6 +77,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
+
     // Configura la autenticación JWT para Swagger
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
@@ -103,6 +104,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 
 var app = builder.Build();
 

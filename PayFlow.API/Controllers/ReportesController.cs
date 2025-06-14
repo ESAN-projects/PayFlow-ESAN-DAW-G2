@@ -7,7 +7,7 @@ namespace PayFlow.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Administrador")]
+    //[Authorize(Roles = "Administrador")]
     public class ReportesController : ControllerBase
     {
         private readonly IReporteFinancieroService _service;
@@ -17,7 +17,7 @@ namespace PayFlow.API.Controllers
             _service = service;
         }
 
-        // 🔍 Previsualización paginada del reporte
+        // Previsualización paginada del reporte
         [HttpPost("previsualizar")]
         public async Task<IActionResult> Previsualizar([FromBody] ReporteFinancieroFiltroDTO filtro)
         {
@@ -25,7 +25,7 @@ namespace PayFlow.API.Controllers
             return Ok(data.Take(50)); // Paginación simple (puedes agregar skip/take si usas frontend)
         }
 
-        // 📥 Exportación a CSV
+        // Exportación a CSV
         [HttpPost("exportar/csv")]
         public async Task<IActionResult> ExportarCSV([FromBody] ReporteFinancieroFiltroDTO filtro)
         {
@@ -34,7 +34,7 @@ namespace PayFlow.API.Controllers
             return File(file, "text/csv", "reporte_financiero.csv");
         }
 
-        // 📥 Exportación a Excel
+        // Exportación a Excel
         [HttpPost("exportar/excel")]
         public async Task<IActionResult> ExportarExcel([FromBody] ReporteFinancieroFiltroDTO filtro)
         {
