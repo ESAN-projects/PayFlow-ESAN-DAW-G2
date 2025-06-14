@@ -10,5 +10,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<TransaccionesDTO> GetTransaccionById(int transactionId);
         Task<bool> RechazarTransaccion(int transaccionId);
         Task<bool> UpdateTransaccion(TransaccionesCreateDTO transaccionDTO);
+        // Nuevo método para filtrar por usuario, estado y fechas
+        Task<IEnumerable<TransaccionesListDTO>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null);
     }
 }

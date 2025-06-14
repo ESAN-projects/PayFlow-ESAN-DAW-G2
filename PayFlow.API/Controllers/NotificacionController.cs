@@ -43,5 +43,63 @@ namespace PayFlow.API.Controllers
             return NoContent(); // 204 No Content
         }
 
+        //Get all notificaciones
+        [HttpGet]
+        public async Task<IActionResult> GetAllNotificaciones()
+        {
+            var notificaciones = await _notificacionService.GetAllNotificaciones();
+            return Ok(notificaciones);
+        }
+        //Get notificacion by id
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetNotificacionById(int id)
+        {
+            var notificacion = await _notificacionService.GetNotificacionById(id);
+            if (notificacion == null)
+            {
+                return NotFound();
+            }
+            return Ok(notificacion);
+        }
+        //Add notificacion
+        [HttpPost]
+        public async Task<IActionResult> AddNotificacion([FromBody] NotificacionCreateDTO data)
+        {
+            if (data == null)
+            {
+                return BadRequest();
+            }
+            var notificacionId = await _notificacionService.AddNotificacion(data);
+            return CreatedAtAction(nameof(GetNotificacionById), new { id = notificacionId }, data);
+        }
+
+        //Update notificacion
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateNotificacion(int id, [FromBody] NotificacionDTO data)
+        {
+            if (id != data.NotificacionId)
+            {
+                return BadRequest();
+            }
+            var result = await _notificacionService.UpdateNotificacion(data);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        //Delete notificacion
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteNotificacion(int id)
+        {
+            var result = await _notificacionService.DeleteNotificacion(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
     }
 }
