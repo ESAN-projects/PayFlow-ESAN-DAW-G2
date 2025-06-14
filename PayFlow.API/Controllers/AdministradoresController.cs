@@ -4,6 +4,7 @@ using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PayFlow.API.Controllers
 {
@@ -114,6 +115,7 @@ namespace PayFlow.API.Controllers
         }
 
         // Endpoint para obtener aporbar deposito por un administrador autenticado
+        [Authorize]
         [HttpPost("aceptar-deposito/{transaccionId}")]
         public async Task<IActionResult> AceptarDeposito(int transaccionId)
         {
