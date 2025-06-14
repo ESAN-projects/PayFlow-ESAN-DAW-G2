@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PayFlow.DOMAIN.Infrastructure.Data;
-using PayFlow.DOMAIN.Core.Interfaces;
-using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.DTOs;
-using Microsoft.AspNetCore.Authorization;
+using PayFlow.DOMAIN.Core.Interfaces;
 
 namespace PayFlow.API.Controllers
 {
@@ -20,6 +17,7 @@ namespace PayFlow.API.Controllers
 
 
         // GET all Administradores
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAdministradores()
         {
@@ -28,6 +26,7 @@ namespace PayFlow.API.Controllers
         }
 
         // GET Administrador by ID
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAdministradoresById(int id)
         {
@@ -39,6 +38,7 @@ namespace PayFlow.API.Controllers
             return Ok(administradores);
         }
         // Add Administradores
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddAdministradores([FromBody] AdministradorCreateDTO administradorCreateDTO)
         {
@@ -52,6 +52,7 @@ namespace PayFlow.API.Controllers
 
         // Update Administradores
         //Check it out
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAdministradores(int id, [FromBody] AdministradorListDTO administradorListDTO)
         {
@@ -71,6 +72,7 @@ namespace PayFlow.API.Controllers
         }
 
         // Delete Administradores Logico
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdministradores(int id)
         {
