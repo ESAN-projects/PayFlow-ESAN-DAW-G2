@@ -4,6 +4,9 @@ using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Core.Servicies;
 using PayFlow.DOMAIN.Infrastructure.Data;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,20 +50,44 @@ builder.Services.AddAuthentication(options =>
 }).AddJwtBearer(bearer => {
 
     bearer.RequireHttpsMetadata = false;
-    bearer.SaveToken = true;
-    bearer.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    bearer.SaveToken = false;
+    bearer.TokenValidationParameters = new TokenValidationParameters
     {
+        
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true, // Habilita la validacion de expiracion
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true, // Habilita la validacin de expiracin
-        RequireExpirationTime = true, // Requiere que el token tenga tiempo de expiracin
+        ValidIssuer = config["JWTSettings:Issuer"],
+        ValidAudience = config["JWTSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
+
+        RequireExpirationTime = true, // Requiere que el token tenga tiempo de expiracion
         ClockSkew = TimeSpan.Zero
     };
 });
 
 builder.Services.AddHttpClient();
+
+// JWT Authentication configuration
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = config["Jwt:Issuer"],
+//        ValidAudience = config["Jwt:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+//    };
+//});
 
 //Add swagger
 builder.Services.AddEndpointsApiExplorer();

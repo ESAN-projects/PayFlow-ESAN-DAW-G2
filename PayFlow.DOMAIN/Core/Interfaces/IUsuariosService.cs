@@ -11,7 +11,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<bool> UpdateUsuarioAsync(UsuariosUpdateDTO usuarioUpdateDTO);
         Task<bool> ActualizarPerfilAsync(int usuarioId, PerfilUpdateDTO dto);
         
-        Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO);
+        Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO);
         Task<string> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO);
     }
 }
