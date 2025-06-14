@@ -11,5 +11,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<bool> RechazarTransaccion(int id);
         Task<bool> UpdateTransaccion(Transacciones transaccion);
         Task<int?> GetUltimoNumeroOperacionAsync();
+        // Nuevo método para filtrar por usuario, estado y fechas
+        Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null);
     }
 }

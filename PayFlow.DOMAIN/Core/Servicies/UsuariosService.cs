@@ -64,7 +64,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 Apellidos = usuarioCreateDTO.Apellidos,
                 Dni = usuarioCreateDTO.Dni,
                 CorreoElectronico = usuarioCreateDTO.CorreoElectronico,
-                ContraseñaHash = usuarioCreateDTO.ContraseñaHash,
+                ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(usuarioCreateDTO.ContraseñaHash),
                 EstadoUsuario = "Activo"
             };
             var usuarioID = await _usuariosRepository.AddUsuarioAsync(usuario);
@@ -115,7 +115,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
 
         //Login usuarios
-        public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDTO)
+        public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
         {
             var usuario = await _usuariosRepository.GetUsuarioByEmailAsync(loginDTO.CorreoElectronico);
             if (usuario == null || usuario.EstadoUsuario == "Inactivo")
@@ -126,7 +126,20 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 };
             }
 
-            var result = BCrypt.Net.BCrypt.Verify(loginDTO.ContraseñaHash, usuario.ContraseñaHash);
+            //var result = BCrypt.Net.BCrypt.Verify(loginDTO.ContraseñaHash, usuario.ContraseñaHash);
+
+            bool result;
+
+            // Si la contraseña en BD parece un hash válido de BCrypt (inicia con $2a, $2b, $2y o similar)
+            if (!string.IsNullOrWhiteSpace(usuario.ContraseñaHash) && usuario.ContraseñaHash.StartsWith("$2"))
+            {
+                result = BCrypt.Net.BCrypt.Verify(loginDTO.Contraseña, usuario.ContraseñaHash);
+            }
+            else
+            {
+                // Comparación directa (solo para pruebas)
+                result = usuario.ContraseñaHash == loginDTO.Contraseña;
+            }
 
             if (!result)  // Si result es false, las credenciales son incorrectas.
             {

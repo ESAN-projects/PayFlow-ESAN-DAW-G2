@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
+using System.Security.Claims;
 
 
 namespace PayFlow.API.Controllers
@@ -81,6 +83,34 @@ namespace PayFlow.API.Controllers
                 return NotFound();
             }
             return Ok(transaccion);
+        }
+        //Get transacciones by usuario, estado y fechas
+        [HttpGet("usuario/{usuarioId}")]
+        public async Task<IActionResult> GetTransaccionesByUsuario(int usuarioId, [FromQuery] string? estado = null, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
+        {
+            var transacciones = await _transaccionesService.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);
+            if (transacciones == null)
+            {
+                return NotFound();
+            }
+            return Ok(transacciones);
+        }
+
+
+        [Authorize]
+        [HttpGet("mis-transacciones")]
+        public async Task<IActionResult> GetMisTransacciones([FromQuery] string? estado = null, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
+        {
+            Console.WriteLine("Ingresando a controlador");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int usuarioId))
+            {
+                Console.WriteLine("❌ Token no contiene el claim de ID de usuario.");
+                return Unauthorized();
+            }
+            var transacciones = await _transaccionesService.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);
+            return Ok(transacciones);
         }
     }
 }

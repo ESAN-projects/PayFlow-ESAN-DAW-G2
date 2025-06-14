@@ -63,7 +63,7 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var updated = await _administradorService.UpdateAdministradoresAsync(administradorListDTO);
-            if (updated == null)
+            if (!updated)
             {
                 return NotFound();
             }
