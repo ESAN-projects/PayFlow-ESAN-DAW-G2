@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
-using System.Net;
+using PayFlow.DOMAIN.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -16,11 +17,12 @@ namespace PayFlow.DOMAIN.Core.Servicies
     {
         public readonly ITransaccionesRepository _transaccionesRepository;
         public readonly INotificacionService _notificacionService;
-        // private readonly ICuentasRepository _cuentasRepository;
-        public RetiroService(ITransaccionesRepository transaccionesRepository, INotificacionService notificacionService)
+        private readonly ICuentasService _cuentasService;
+        public RetiroService(ITransaccionesRepository transaccionesRepository, INotificacionService notificacionService, ICuentasService cuentasService)
         {
             _transaccionesRepository = transaccionesRepository;
             _notificacionService = notificacionService;
+            _cuentasService = cuentasService;
         }
 
         
@@ -37,7 +39,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 TransaccionId = transaccion.TransaccionId,
                 CuentaId = transaccion.CuentaId,
                 Monto = transaccion.Monto,
-                Iporigen = transaccion.Iporigen
+                Iporigen = transaccion.Iporigen,
+                Estado = transaccion.Estado
             };
             return retiroDTO;
         }
@@ -48,7 +51,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
             // Validate the transaccion object before adding
             if (retiroCreateDTO.CuentaId <= 0 || retiroCreateDTO.Monto <= 0)
             {
-                return -1; // Indicate an error with invalid data
+                throw new ArgumentException("CuentaId y Monto deben ser validos.");
             }
 
             var estado = "Aceptado"; // Default state for the transaction
@@ -58,15 +61,13 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 estado = "Pendiente"; // If the amount is greater than 100000, set state to "Pendiente"
             }
 
-            /*
-            var cuenta = await _cuentasRepository.GetCuentaById(retiroCreateDTO.CuentaId);
-            if (cuenta == null)
+            
+            var cuenta = await _cuentasService.GetCuentaById(retiroCreateDTO.CuentaId) ??
                 throw new InvalidOperationException("Cuenta no encontrada.");
 
             // Validar saldo suficiente
             if (cuenta.Saldo < retiroCreateDTO.Monto)
                 throw new InvalidOperationException("Saldo insuficiente para realizar el retiro.");
-            */
 
             var transaccion = new Transacciones
             {
@@ -85,7 +86,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 // registramos mensaje de notificación
                 var notificacion = new NotificacionCreateDTO
                 {
-                    UsuarioId = 1, //cuenta.UsuarioId, // Assuming you have the user ID from the cuenta object
+                    UsuarioId = cuenta.UsuarioId,
                     TransaccionId = transactionId,
                     TipoNotificacion = "Alerta",
                     Mensaje = "Retiro pendiente de aprobación por monto elevado.",
@@ -93,6 +94,15 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     Estado = "No Leido"
                 };
                 await _notificacionService.AddNotificacion(notificacion);
+            }
+
+            // Actualizar el saldo de la cuenta con el monto del retiro
+            cuenta.Saldo -= retiroCreateDTO.Monto;
+            var resultCuenta = await _cuentasService.UpdateCuenta(cuenta);
+
+            if (!resultCuenta)
+            {
+                throw new Exception("No se pudo actualizar el saldo de la cuenta.");
             }
 
             return transactionId;

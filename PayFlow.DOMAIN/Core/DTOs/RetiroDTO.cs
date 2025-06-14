@@ -18,5 +18,6 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public int CuentaId { get; set; }
         public decimal Monto { get; set; }
         public string? Iporigen { get; set; }
+        public string Estado { get; set; } = null!;
     }
 }

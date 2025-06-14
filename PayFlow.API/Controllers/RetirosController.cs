@@ -18,7 +18,7 @@ namespace PayFlow.API.Controllers
         }
         
         //Get retiro by id
-        [HttpGet("{transactionId}")]
+        [HttpGet("{retiroId}")]
         public async Task<IActionResult> GetRetiroById(int retiroId)
         {
             var transaccion = await _retiroService.GetRetiroById(retiroId);
@@ -37,14 +37,33 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var Iporigen = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-            var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen);
-            if (transaccionId <= 0)
+            try
             {
-                return BadRequest("Error al procesar el retiro.");
+                var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen);
+                if (transaccionId <= 0)
+                {
+                    return BadRequest("Error al procesar el retiro.");
+                }
+
+                var retiroCreated = await _retiroService.GetRetiroById(transaccionId);
+                return CreatedAtAction(nameof(GetRetiroById), new { retiroId = transaccionId }, retiroCreated);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Ejemplo: saldo insuficiente, cuenta no encontrada, etc.
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                // Ejemplo: argumentos inválidos
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Otros errores no controlados
+                return StatusCode(500, "Error interno del servidor: " + ex.Message);
             }
 
-            var retiroCreated = await _retiroService.GetRetiroById(transaccionId);
-            return CreatedAtAction(nameof(GetRetiroById), new { transactionId = transaccionId }, retiroCreated);
         }
     }
 }
