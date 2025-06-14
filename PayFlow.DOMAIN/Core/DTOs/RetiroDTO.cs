@@ -8,7 +8,7 @@ namespace PayFlow.DOMAIN.Core.DTOs
 {
     public class RetiroCreateDTO
     {
-        public int CuentaId { get; set; }
+        public string NumeroCuenta { get; set; }
         public decimal Monto { get; set; }
     }
 

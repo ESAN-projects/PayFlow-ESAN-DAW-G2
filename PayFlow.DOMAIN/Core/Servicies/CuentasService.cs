@@ -50,7 +50,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
             {
                 CuentaId = cuenta.CuentaId,
                 UsuarioId = cuenta.UsuarioId,
-                Saldo = cuenta.Saldo
+                Saldo = cuenta.Saldo,
+                NumeroCuenta = cuenta.NumeroCuenta
             };
             return cuentaUserDTO;
         }

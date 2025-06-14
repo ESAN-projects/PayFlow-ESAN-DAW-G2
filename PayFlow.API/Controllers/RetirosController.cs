@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
+using System.Security.Claims;
 
 
 namespace PayFlow.API.Controllers
@@ -16,8 +18,9 @@ namespace PayFlow.API.Controllers
         {
             _retiroService = transaccionesService;
         }
-        
+
         //Get retiro by id
+        [Authorize]
         [HttpGet("{retiroId}")]
         public async Task<IActionResult> GetRetiroById(int retiroId)
         {
@@ -29,6 +32,7 @@ namespace PayFlow.API.Controllers
             return Ok(transaccion);
         }
         //Add retiro
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddRetiro([FromBody] RetiroCreateDTO retiro)
         {
@@ -39,7 +43,13 @@ namespace PayFlow.API.Controllers
             var Iporigen = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             try
             {
-                var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int usuarioId))
+                {
+                   throw new ArgumentException("Usuario no encontrado o inválido.");
+                }
+
+                var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen, usuarioId);
                 if (transaccionId <= 0)
                 {
                     return BadRequest("Error al procesar el retiro.");

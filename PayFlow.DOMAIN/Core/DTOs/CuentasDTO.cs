@@ -19,5 +19,6 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public int CuentaId { get; set; }
         public int UsuarioId { get; set; }
         public decimal Saldo { get; set; }
+        public string NumeroCuenta { get; set; } = null!;
     }
 }
