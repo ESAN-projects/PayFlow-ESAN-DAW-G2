@@ -41,6 +41,15 @@ builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
 builder.Services.AddHttpContextAccessor();
 
+//Add cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -115,6 +124,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 
