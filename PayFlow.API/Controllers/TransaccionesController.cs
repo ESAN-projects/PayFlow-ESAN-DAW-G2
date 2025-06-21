@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
-using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using System.Security.Claims;
 
@@ -45,7 +43,7 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var transaccionId = await _transaccionesService.AddTransaccion(transaccion);
-            return CreatedAtAction(nameof(GetTransactionById), new { id = transaccionId }, transaccion);
+            return CreatedAtAction(nameof(GetTransactionById), new { transactionId = transaccionId }, transaccion);
         }
         //Update transacciones
         [HttpPut("{transactionId}")]
