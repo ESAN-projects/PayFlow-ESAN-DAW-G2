@@ -36,6 +36,7 @@ namespace PayFlow.API.Controllers
             }
             return Ok(transaccion);
         }
+
         //Add transacciones
         [HttpPost]
         public async Task<IActionResult> AddTransaccion([FromBody] TransaccionesCreateDTO transaccion)
@@ -45,7 +46,7 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var transaccionId = await _transaccionesService.AddTransaccion(transaccion);
-            return CreatedAtAction(nameof(GetTransactionById), new { id = transaccionId }, transaccion);
+            return CreatedAtAction(nameof(GetTransactionById), new { transactionId = transaccionId }, transaccion);
         }
         //Update transacciones
         [HttpPut("{transactionId}")]

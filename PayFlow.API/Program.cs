@@ -22,6 +22,18 @@ builder.Services.AddTransient<INotificacionService, NotificacionService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder//.WithOrigins("URL-FRONTEND")
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
@@ -134,9 +146,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
