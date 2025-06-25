@@ -8,7 +8,7 @@ namespace PayFlow.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Administrador")] // Solo accesible por administradores autenticados
+    //[Authorize(Roles = "Administrador")] 
     public class ValidacionManualController : ControllerBase
     {
         private readonly IValidacionManualService _validacionService;

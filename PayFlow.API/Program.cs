@@ -41,6 +41,15 @@ builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
 builder.Services.AddHttpContextAccessor();
 
+//Add cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -77,6 +86,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
+
     // Configura la autenticación JWT para Swagger
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
@@ -104,6 +114,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -115,6 +126,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 
