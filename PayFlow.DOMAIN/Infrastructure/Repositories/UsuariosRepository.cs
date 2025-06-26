@@ -26,9 +26,22 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return await _context.Usuarios.FirstOrDefaultAsync(x => x.UsuarioId == id && x.EstadoUsuario == "Activo");
         }
 
+        //Get by id usuarios
+        public async Task<Usuarios?> GetUsuarioByCorreoAsync(string Email)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == Email && x.EstadoUsuario == "Activo");
+        }
+
         //Add usuarios
         public async Task<int> AddUsuarioAsync(Usuarios usuario)
         {
+            // Validar si el correo ya está registrado (activo o inactivo)
+            var existeCorreo = await _context.Usuarios.AnyAsync(x => x.CorreoElectronico == usuario.CorreoElectronico);
+            if (existeCorreo)
+            {
+                // Retornar 0 para indicar que el correo ya existe
+                return 0;
+            }
             await _context.Usuarios.AddAsync(usuario);
             await _context.SaveChangesAsync();
             return usuario.UsuarioId;
@@ -76,7 +89,8 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         //reset password
         public async Task<bool> ResetPassword(string correo, string newPassword)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == correo);
+            // Solo permitir reset si el usuario está activo
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == correo && x.EstadoUsuario == "Activo");
             if (usuario == null)
             {
                 return false;

@@ -46,6 +46,10 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var id = await _usuariosService.AddUsuarioAsync(usuarioCreateDTO);
+            if (id == 0)
+            {
+                return Conflict(new { message = "El correo electrónico ya está registrado." });
+            }
             return CreatedAtAction(nameof(GetUsuarioById), new { id }, new { Id = id });
         }
 
@@ -104,11 +108,15 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var result = await _usuariosService.ResetPasswordAsync(resetPasswordDTO);
-            if (result is NotFoundResult)
+            if (result == "Usuario no encontrado o inactivo.")
             {
-                return NotFound();
+                return NotFound(new { message = result });
             }
-            return NoContent();
+            if (result == "Error al restablecer la contraseña.")
+            {
+                return BadRequest(new { message = result });
+            }
+            return Ok(new { message = result });
         }
     }
 }
