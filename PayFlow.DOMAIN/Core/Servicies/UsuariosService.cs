@@ -58,6 +58,13 @@ namespace PayFlow.DOMAIN.Core.Servicies
         //Add usuarios
         public async Task<int> AddUsuarioAsync(UsuariosCreateDTO usuarioCreateDTO)
         {
+            // Validar si el correo ya está registrado
+            var existe = await _usuariosRepository.GetUsuarioByEmailAsync(usuarioCreateDTO.CorreoElectronico);
+            if (existe != null)
+            {
+                // Retornar 0 para indicar que el correo ya existe
+                return 0;
+            }
             var usuario = new Usuarios
             {
                 Nombres = usuarioCreateDTO.Nombres,
@@ -161,8 +168,9 @@ namespace PayFlow.DOMAIN.Core.Servicies
         //Resetear contraseña con enlace de contraseña
         public async Task<string> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-            var usuario = await _usuariosRepository.GetUsuarioByEmailAsync(resetPasswordDTO.CorreoElectronico);
-            if (usuario == null || usuario.EstadoUsuario == "Inactivo")
+            // Buscar solo usuarios activos
+            var usuario = await _usuariosRepository.GetUsuarioByCorreoAsync(resetPasswordDTO.CorreoElectronico);
+            if (usuario == null)
             {
                 return "Usuario no encontrado o inactivo.";
             }
