@@ -66,7 +66,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
         {
             var transaccion = new Transacciones
             {
-                TransaccionId = transaccionDTO.TransaccionId,
+                //TransaccionId = transaccionDTO.TransaccionId,
                 CuentaId = transaccionDTO.CuentaId,
                 TipoTransaccion = transaccionDTO.TipoTransaccion,
                 Monto = transaccionDTO.Monto,

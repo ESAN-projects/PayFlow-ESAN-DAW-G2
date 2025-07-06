@@ -39,6 +39,7 @@ builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
+builder.Services.AddTransient<PayFlow.DOMAIN.Core.Interfaces.ICuentasService, PayFlow.DOMAIN.Core.Servicies.CuentasService>();
 builder.Services.AddHttpContextAccessor();
 
 //Add cors
