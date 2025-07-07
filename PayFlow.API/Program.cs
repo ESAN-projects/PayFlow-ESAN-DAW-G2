@@ -92,27 +92,37 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Ingresa el token JWT con el prefijo 'Bearer '"
     });
 
-/*// Configuraci�n de autenticaci�n JWT
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false; // Solo para desarrollo
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+    /*// Configuraci�n de autenticaci�n JWT
+
+    builder.Services.AddAuthentication(options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false; // Solo para desarrollo
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };*/
 });
-*/
+//configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
