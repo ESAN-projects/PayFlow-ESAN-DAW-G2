@@ -12,5 +12,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<Usuarios?> GetUsuarioByEmailAsync(string email);
         Task<bool> ResetPassword(string correo, string newPasswordHash);
         Task<Usuarios?> GetUsuarioByCorreoAsync(string Email);
+        Task<Usuarios?> GetUsuarioByJwtTokenAsync(string jwtToken);
     }
 }

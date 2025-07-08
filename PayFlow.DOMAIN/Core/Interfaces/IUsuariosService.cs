@@ -13,5 +13,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         
         Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO);
         Task<string> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO);
+        Task<UsuariosListDTO?> GetUsuarioByJwtTokenAsync(string jwtToken);
     }
 }
