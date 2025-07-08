@@ -3,6 +3,8 @@ using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
@@ -102,6 +104,26 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             _context.Usuarios.Update(usuario);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        //Obtener usuario por JWT
+        public async Task<Usuarios?> GetUsuarioByJwtTokenAsync(string jwtToken)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(jwtToken);
+                var usuarioIdClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (usuarioIdClaim != null && int.TryParse(usuarioIdClaim.Value, out int usuarioId))
+                {
+                    return await _context.Usuarios.FirstOrDefaultAsync(x => x.UsuarioId == usuarioId && x.EstadoUsuario == "Activo");
+                }
+                return null;
+            }
+            catch
+            {
+                return null; // Si hay un error al procesar el token, retornar null
+            }
         }
     }
 }

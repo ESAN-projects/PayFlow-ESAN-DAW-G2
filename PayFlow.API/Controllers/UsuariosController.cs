@@ -118,5 +118,24 @@ namespace PayFlow.API.Controllers
             }
             return Ok(new { message = result });
         }
+
+        //Obtener usuario logueado por JWT
+        [Authorize]
+        [HttpGet("usuarioByjwt")]
+        public async Task<IActionResult> GetUsuarioByJwt()
+        {
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                return Unauthorized();
+            }
+            var jwtToken = authHeader.Substring("Bearer ".Length).Trim();
+            var usuario = await _usuariosService.GetUsuarioByJwtTokenAsync(jwtToken);
+            if (usuario == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado o inactivo." });
+            }
+            return Ok(usuario);
+        }
     }
 }

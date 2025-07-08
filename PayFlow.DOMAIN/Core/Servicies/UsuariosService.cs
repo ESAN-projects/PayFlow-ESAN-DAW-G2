@@ -182,5 +182,23 @@ namespace PayFlow.DOMAIN.Core.Servicies
             }
             return "Contraseña restablecida con éxito.";
         }
+
+        //Obtener usuario por JWT
+        public async Task<UsuariosListDTO?> GetUsuarioByJwtTokenAsync(string jwtToken)
+        {
+            var usuario = await _usuariosRepository.GetUsuarioByJwtTokenAsync(jwtToken);
+            if (usuario == null)
+            {
+                return null;
+            }
+            return new UsuariosListDTO
+            {
+                UsuarioId = usuario.UsuarioId,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                Dni = usuario.Dni,
+                CorreoElectronico = usuario.CorreoElectronico
+            };
+        }
     }
 }
