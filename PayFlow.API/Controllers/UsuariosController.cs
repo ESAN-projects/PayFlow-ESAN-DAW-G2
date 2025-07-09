@@ -46,6 +46,10 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var id = await _usuariosService.AddUsuarioAsync(usuarioCreateDTO);
+            if (id == 0)
+            {
+                return Conflict(new { message = "El correo electrónico ya está registrado." });
+            }
             return CreatedAtAction(nameof(GetUsuarioById), new { id }, new { Id = id });
         }
 
@@ -104,11 +108,34 @@ namespace PayFlow.API.Controllers
                 return BadRequest();
             }
             var result = await _usuariosService.ResetPasswordAsync(resetPasswordDTO);
-            if (result is NotFoundResult)
+            if (result == "Usuario no encontrado o inactivo.")
             {
-                return NotFound();
+                return NotFound(new { message = result });
             }
-            return NoContent();
+            if (result == "Error al restablecer la contraseña.")
+            {
+                return BadRequest(new { message = result });
+            }
+            return Ok(new { message = result });
+        }
+
+        //Obtener usuario logueado por JWT
+        [Authorize]
+        [HttpGet("usuarioByjwt")]
+        public async Task<IActionResult> GetUsuarioByJwt()
+        {
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                return Unauthorized();
+            }
+            var jwtToken = authHeader.Substring("Bearer ".Length).Trim();
+            var usuario = await _usuariosService.GetUsuarioByJwtTokenAsync(jwtToken);
+            if (usuario == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado o inactivo." });
+            }
+            return Ok(usuario);
         }
     }
 }
