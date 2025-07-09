@@ -1,7 +1,9 @@
-﻿using PayFlow.DOMAIN.Core.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
+using System.Security.Claims;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -11,13 +13,15 @@ namespace PayFlow.DOMAIN.Core.Servicies
         private readonly JwtTokenGenerator _jwtTokenGenerator;
         private readonly ITransaccionesRepository _transaccionesRepository;
         private readonly ICuentasRepository _cuentasRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AdministradorService(IAdministradoresRepository administradoresRepository, JwtTokenGenerator jwtTokenGenerator,ITransaccionesRepository transaccionesRepository, ICuentasRepository cuentasRepository)
+        public AdministradorService(IAdministradoresRepository administradoresRepository, JwtTokenGenerator jwtTokenGenerator,ITransaccionesRepository transaccionesRepository, ICuentasRepository cuentasRepository, IHttpContextAccessor httpContextAccessor)
         {
             _administradoresRepository = administradoresRepository;
             _jwtTokenGenerator = jwtTokenGenerator;
             _transaccionesRepository = transaccionesRepository;
             _cuentasRepository = cuentasRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
         //Get All ADM
         public async Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync()
@@ -137,8 +141,45 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return "Contraseña restablecida con éxito.";
         }
 
+        // Es administrador?
+        public async Task<bool> IsUserAdminAsync()
+        {
+            // Obtener el idAdministrador desde el JWT
+            var isAdministrador = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(isAdministrador))
+            {
+                throw new Exception("Administrador no autenticado.");
+            }
+
+            // Verificar que el claim `Role` sea "Administrador"
+            var roleClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            if (roleClaim != "Administrador")
+            {
+                throw new UnauthorizedAccessException("El usuario no tiene permisos de administrador.");
+            }
+
+            // Convertir el idAdministrador a entero
+            int idAdministrador = int.Parse(isAdministrador);
+
+            // Verificar si el administrador existe en la base de datos
+            var administrador = await _administradoresRepository.GetAdministradoresByIdAsync(idAdministrador);
+            if (administrador == null)
+            {
+                throw new Exception("Administrador no encontrado.");
+            }
+
+            return true;  // El administrador está autenticado y existe en la base de datos
+        }
+
         public async Task<bool> AceptarDepositoAsync(int transaccionId)
         {
+            // Verificar si el usuario es un administrador autenticado
+            if (!await IsUserAdminAsync())
+            {
+                throw new UnauthorizedAccessException("No tiene permisos para realizar esta acción.");
+            }
+
             // Obtener la transacción pendiente
             var transaccion = await _transaccionesRepository.GetTransaccionById(transaccionId);
             if (transaccion == null || transaccion.Estado != "Pendiente")

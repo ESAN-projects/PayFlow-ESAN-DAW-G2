@@ -3,6 +3,8 @@ using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
@@ -26,9 +28,22 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return await _context.Usuarios.FirstOrDefaultAsync(x => x.UsuarioId == id && x.EstadoUsuario == "Activo");
         }
 
+        //Get by id usuarios
+        public async Task<Usuarios?> GetUsuarioByCorreoAsync(string Email)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == Email && x.EstadoUsuario == "Activo");
+        }
+
         //Add usuarios
         public async Task<int> AddUsuarioAsync(Usuarios usuario)
         {
+            // Validar si el correo ya está registrado (activo o inactivo)
+            var existeCorreo = await _context.Usuarios.AnyAsync(x => x.CorreoElectronico == usuario.CorreoElectronico);
+            if (existeCorreo)
+            {
+                // Retornar 0 para indicar que el correo ya existe
+                return 0;
+            }
             await _context.Usuarios.AddAsync(usuario);
             await _context.SaveChangesAsync();
             return usuario.UsuarioId;
@@ -76,7 +91,8 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         //reset password
         public async Task<bool> ResetPassword(string correo, string newPassword)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == correo);
+            // Solo permitir reset si el usuario está activo
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(x => x.CorreoElectronico == correo && x.EstadoUsuario == "Activo");
             if (usuario == null)
             {
                 return false;
@@ -88,6 +104,26 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             _context.Usuarios.Update(usuario);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        //Obtener usuario por JWT
+        public async Task<Usuarios?> GetUsuarioByJwtTokenAsync(string jwtToken)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(jwtToken);
+                var usuarioIdClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (usuarioIdClaim != null && int.TryParse(usuarioIdClaim.Value, out int usuarioId))
+                {
+                    return await _context.Usuarios.FirstOrDefaultAsync(x => x.UsuarioId == usuarioId && x.EstadoUsuario == "Activo");
+                }
+                return null;
+            }
+            catch
+            {
+                return null; // Si hay un error al procesar el token, retornar null
+            }
         }
     }
 }

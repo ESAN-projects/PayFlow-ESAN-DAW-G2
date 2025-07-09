@@ -58,6 +58,13 @@ namespace PayFlow.DOMAIN.Core.Servicies
         //Add usuarios
         public async Task<int> AddUsuarioAsync(UsuariosCreateDTO usuarioCreateDTO)
         {
+            // Validar si el correo ya está registrado
+            var existe = await _usuariosRepository.GetUsuarioByEmailAsync(usuarioCreateDTO.CorreoElectronico);
+            if (existe != null)
+            {
+                // Retornar 0 para indicar que el correo ya existe
+                return 0;
+            }
             var usuario = new Usuarios
             {
                 Nombres = usuarioCreateDTO.Nombres,
@@ -161,8 +168,9 @@ namespace PayFlow.DOMAIN.Core.Servicies
         //Resetear contraseña con enlace de contraseña
         public async Task<string> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-            var usuario = await _usuariosRepository.GetUsuarioByEmailAsync(resetPasswordDTO.CorreoElectronico);
-            if (usuario == null || usuario.EstadoUsuario == "Inactivo")
+            // Buscar solo usuarios activos
+            var usuario = await _usuariosRepository.GetUsuarioByCorreoAsync(resetPasswordDTO.CorreoElectronico);
+            if (usuario == null)
             {
                 return "Usuario no encontrado o inactivo.";
             }
@@ -173,6 +181,24 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 return "Error al restablecer la contraseña.";
             }
             return "Contraseña restablecida con éxito.";
+        }
+
+        //Obtener usuario por JWT
+        public async Task<UsuariosListDTO?> GetUsuarioByJwtTokenAsync(string jwtToken)
+        {
+            var usuario = await _usuariosRepository.GetUsuarioByJwtTokenAsync(jwtToken);
+            if (usuario == null)
+            {
+                return null;
+            }
+            return new UsuariosListDTO
+            {
+                UsuarioId = usuario.UsuarioId,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                Dni = usuario.Dni,
+                CorreoElectronico = usuario.CorreoElectronico
+            };
         }
     }
 }
