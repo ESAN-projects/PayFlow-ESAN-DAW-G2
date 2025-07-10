@@ -21,7 +21,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         // Obtener una cuenta por su ID
-        public async Task<Cuentas> GetCuentaByIdAsync(int cuentaId)
+        public async Task<Cuentas?> GetCuentaByIdAsync(int cuentaId)
         {
             return await _context.Cuentas.FirstOrDefaultAsync(c => c.CuentaId == cuentaId);
         }
@@ -33,12 +33,22 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         // Actualizar el saldo de una cuenta
+
         public async Task UpdateCuentaAsync(Cuentas cuenta)
         {
             _context.Cuentas.Update(cuenta);
             // No llamar a SaveChangesAsync aquí
         }
-        
+        /*public async Task UpdateCuentaAsync(Cuentas cuenta)
+        {
+            var local = _context.Cuentas.Local.FirstOrDefault(e => e.CuentaId == cuenta.CuentaId);
+            if (local != null && local != cuenta)
+            {
+                _context.Entry(local).State = EntityState.Detached;
+            }
+            _context.Entry(cuenta).State = EntityState.Modified;
+            return await _context.SaveChangesAsync() >= 0;
+        }*/
         public async Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId)
         {
             var cuenta = await _context.Cuentas
@@ -51,6 +61,31 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                     .Take(5)
                     .ToList();
             }
+            return cuenta;
+        }
+
+        //Ultimo numero de cuenta
+        public async Task<string> GetUltimoNumeroCuentaAsync()
+        {
+            var ultimoNumeroCuenta = await _context.Cuentas
+            .Where(c => c.NumeroCuenta != null)
+            .OrderByDescending(c => c.NumeroCuenta)
+            .FirstOrDefaultAsync();
+
+            return ultimoNumeroCuenta?.NumeroCuenta;
+        }
+
+        public async Task<int> AddCuentaAsync(Cuentas cuenta)
+        {
+            await _context.Cuentas.AddAsync(cuenta);
+            await _context.SaveChangesAsync();
+            return cuenta.CuentaId;
+        }
+            
+        public async Task<Cuentas?> GetCuentaByUsuarioId(int usuarioId)
+        {
+            var cuenta = await _context.Cuentas
+                .FirstOrDefaultAsync(c => c.UsuarioId == usuarioId);
             return cuenta;
         }
 

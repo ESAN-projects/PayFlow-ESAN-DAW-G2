@@ -19,7 +19,7 @@ namespace PayFlow.API.Controllers
         [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> GetCuentaByUsuarioId(int usuarioId)
         {
-            var cuenta = await _cuentasService.GetCuentaByUsuarioIdAsync(usuarioId);
+            var cuenta = await _cuentasService.GetCuentaByUsuarioId(usuarioId);
             if (cuenta == null)
                 return NotFound();
             return Ok(cuenta);

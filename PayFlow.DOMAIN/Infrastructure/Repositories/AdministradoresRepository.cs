@@ -19,9 +19,21 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         //Get all Administradores
-        public async Task<List<Administradores>> GetAllAdministradoresAsync()
+        public async Task<List<Administradores>> GetAllAdministradoresAsync(string? filtro, string? busqueda)
         {
-            return await _context.Administradores.Where(c => c.EstadoAdministrador == "Activo").ToListAsync();
+            var query = _context.Administradores.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                query = query.Where(a => a.EstadoAdministrador == filtro);
+            }
+
+            if (!string.IsNullOrEmpty(busqueda))
+            {
+                query = query.Where(a => a.Nombres.Contains(busqueda) || a.Apellidos.Contains(busqueda));
+            }
+
+            return await query.ToListAsync();
         }
 
         //Get Administradores by ID

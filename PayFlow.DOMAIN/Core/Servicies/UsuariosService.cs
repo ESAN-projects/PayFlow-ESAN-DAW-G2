@@ -1,10 +1,11 @@
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Repositories;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,23 +16,31 @@ namespace PayFlow.DOMAIN.Core.Servicies
     {
         private readonly IUsuariosRepository _usuariosRepository;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
-        public UsuariosService(IUsuariosRepository usuariosRepository, JwtTokenGenerator jwtTokenGenerator)
+        private readonly ICuentasRepository _cuentasRepository;
+        public UsuariosService(IUsuariosRepository usuariosRepository, JwtTokenGenerator jwtTokenGenerator, ICuentasRepository cuentasRepository)
         {
             _usuariosRepository = usuariosRepository;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _cuentasRepository = cuentasRepository;
         }
 
         //Get all usuarios
-        public async Task<IEnumerable<UsuariosListDTO>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<UsuariosListDTO>> GetAllUsuariosAsync(
+            string? filtro,
+            string? busqueda,
+            DateTime? fechaInicio,
+            DateTime? fechaFin)
         {
-            var usuarios = await _usuariosRepository.GetAllUsuariosAsync();
+            var usuarios = await _usuariosRepository.GetAllUsuariosAsync(filtro, busqueda, fechaInicio, fechaFin);
             var usuariosListDTO = usuarios.Select(usuario => new UsuariosListDTO
             {
                 UsuarioId = usuario.UsuarioId,
                 Nombres = usuario.Nombres,
                 Apellidos = usuario.Apellidos,
                 Dni = usuario.Dni,
-                CorreoElectronico = usuario.CorreoElectronico
+                CorreoElectronico = usuario.CorreoElectronico,
+                FechaRegistro = usuario.FechaRegistro,
+                EstadoUsuario = usuario.EstadoUsuario
             });
             return usuariosListDTO;
         }
@@ -75,7 +84,26 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 EstadoUsuario = "Activo"
             };
             var usuarioID = await _usuariosRepository.AddUsuarioAsync(usuario);
-            return usuarioID;
+
+            var ultimoNumeroCuenta = await _cuentasRepository.GetUltimoNumeroCuentaAsync();
+
+            long siguienteNumeroCuenta = ultimoNumeroCuenta != null
+            ? long.Parse(ultimoNumeroCuenta) + 1
+            : 2001000000; // Si no existe, asignar el primer número de cuenta como base.
+
+            var cuenta = new Cuentas
+            {
+                UsuarioId = usuarioID, // Relacionar la cuenta con el usuario
+                NumeroCuenta = siguienteNumeroCuenta.ToString(),
+                Saldo = 0, // El saldo inicial es 0
+                EstadoCuenta = "Activo" // Estado "Activo"
+            };
+
+            // Guardar la cuenta a través del repositorio
+            await _cuentasRepository.AddCuentaAsync(cuenta);
+
+            return usuarioID; // Retornar el ID del usuari
+
         }
 
         //Update usuarios

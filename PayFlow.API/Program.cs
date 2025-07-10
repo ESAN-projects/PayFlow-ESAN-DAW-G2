@@ -42,6 +42,7 @@ builder.Services.AddTransient<IAdministradoresRepository, AdministradoresReposit
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
 builder.Services.AddTransient<ITransaccionesService, TransaccionesService>();
 builder.Services.AddTransient<IAdministradorService, AdministradorService>();
+builder.Services.AddTransient<IRetiroService, RetiroService>();
 builder.Services.AddScoped<ICuentasRepository, CuentasRepository>();
 builder.Services.AddScoped<IUsuarioDashboardService, UsuarioDashboardService>();
 builder.Services.AddScoped<IValidacionManualService, ValidacionManualService>();
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IHistorialValidacionesRepository, HistorialValidacion
 builder.Services.AddScoped<IReporteFinancieroService, ReporteFinancieroService>();
 builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
+builder.Services.AddTransient<ICuentasService, CuentasService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
 
@@ -73,13 +75,14 @@ builder.Services.AddAuthentication(options =>
         
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true, // Habilita la validaci�n de expiraci�n
+        ValidateLifetime = true, // Habilita la validacion de expiracion
         ValidateIssuerSigningKey = true,
         ValidIssuer = config["JWTSettings:Issuer"],
         ValidAudience = config["JWTSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWTSettings:SecretKey"])),
 
-        //RequireExpirationTime = true // Requiere que el token tenga tiempo de expiraci�n
+        RequireExpirationTime = true, // Requiere que el token tenga tiempo de expiracion
+        ClockSkew = TimeSpan.Zero
     };
 });
 

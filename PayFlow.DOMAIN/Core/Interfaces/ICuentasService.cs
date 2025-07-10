@@ -5,6 +5,8 @@ namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface ICuentasService
     {
-        Task<CuentaUsuarioDTO?> GetCuentaByUsuarioIdAsync(int usuarioId);
+        Task<CuentasDTO?> GetCuentaById(int cuentaId);
+        Task<CuentaUserDTO?> GetCuentaByUsuarioId(int usuarioId);
+        Task<bool> UpdateCuenta(CuentasDTO cuentaDTO);
     }
 }
