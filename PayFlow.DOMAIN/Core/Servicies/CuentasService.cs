@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
@@ -69,7 +69,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
             cuenta.NumeroCuenta = cuentaDTO.NumeroCuenta;
             cuenta.EstadoCuenta = cuentaDTO.EstadoCuenta;
             // Guardar cambios usando la misma instancia
-            return await _cuentasRepository.UpdateCuentaAsync(cuenta);
+            await _cuentasRepository.UpdateCuentaAsync(cuenta);
+            return true;
         }
     }
 }

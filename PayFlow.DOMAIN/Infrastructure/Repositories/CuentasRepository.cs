@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
     public class CuentasRepository : ICuentasRepository
@@ -34,7 +33,13 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         // Actualizar el saldo de una cuenta
-        public async Task<bool> UpdateCuentaAsync(Cuentas cuenta)
+
+        public async Task UpdateCuentaAsync(Cuentas cuenta)
+        {
+            _context.Cuentas.Update(cuenta);
+            // No llamar a SaveChangesAsync aquí
+        }
+        /*public async Task UpdateCuentaAsync(Cuentas cuenta)
         {
             var local = _context.Cuentas.Local.FirstOrDefault(e => e.CuentaId == cuenta.CuentaId);
             if (local != null && local != cuenta)
@@ -43,7 +48,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             }
             _context.Entry(cuenta).State = EntityState.Modified;
             return await _context.SaveChangesAsync() >= 0;
-        }
+        }*/
         public async Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId)
         {
             var cuenta = await _context.Cuentas
@@ -82,6 +87,12 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             var cuenta = await _context.Cuentas
                 .FirstOrDefaultAsync(c => c.UsuarioId == usuarioId);
             return cuenta;
+        }
+
+        // Obtener una cuenta por su número de cuenta
+        public async Task<Cuentas?> ObtenerPorNumeroCuentaAsync(string numeroCuenta)
+        {
+            return await _context.Cuentas.FirstOrDefaultAsync(c => c.NumeroCuenta == numeroCuenta);
         }
     }
 }

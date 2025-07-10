@@ -1,4 +1,5 @@
-﻿using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Core.DTOs;
+using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
