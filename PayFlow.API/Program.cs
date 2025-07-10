@@ -51,11 +51,10 @@ builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
-<<<<<<< HEAD
+
 builder.Services.AddTransient<ITransferenciaService, TransferenciaService>();
-=======
+
 builder.Services.AddTransient<PayFlow.DOMAIN.Core.Interfaces.ICuentasService, PayFlow.DOMAIN.Core.Servicies.CuentasService>();
->>>>>>> 5859d46a7973d0327bfd9e04f850fc418f21df1c
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<ICuentasService, CuentasService>();
