@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
@@ -119,5 +120,38 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId)
+        {
+            var cuenta = await _context.Cuentas
+                .Where(c => c.UsuarioId == usuarioId && c.EstadoCuenta == "Activo")
+                .FirstOrDefaultAsync();
+
+            if (cuenta == null)
+                return null;
+
+            var movimientos = await _context.Transacciones
+                .Where(t => t.CuentaId == cuenta.CuentaId)
+                .OrderByDescending(t => t.FechaHora)
+                .Take(10)
+                .Select(t => new MovimientoDTO
+                {
+                    TipoTransaccion = t.TipoTransaccion,
+                    NumeroOperacion = t.NumeroOperacion,
+                    FechaHora = t.FechaHora,
+                    Monto = t.Monto,
+                    Estado = t.Estado
+                })
+                .ToListAsync();
+
+            return new ResumenInicioDTO
+            {
+                NumeroCuenta = cuenta.NumeroCuenta,
+                Saldo = cuenta.Saldo,
+                Movimientos = movimientos
+            };
+        }
+
+
     }
 }

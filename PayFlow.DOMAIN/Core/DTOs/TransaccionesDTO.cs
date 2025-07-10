@@ -48,4 +48,21 @@
         
     }
 
+    public class ResumenInicioDTO
+    {
+        public string NumeroCuenta { get; set; }
+        public decimal Saldo { get; set; }
+
+        public List<MovimientoDTO> Movimientos { get; set; } = new();
+    }
+
+    public class MovimientoDTO
+    {
+        public string TipoTransaccion { get; set; }
+        public string NumeroOperacion { get; set; }
+        public DateTime FechaHora { get; set; }
+        public decimal Monto { get; set; }
+        public string Estado { get; set; }
+    }
+
 }

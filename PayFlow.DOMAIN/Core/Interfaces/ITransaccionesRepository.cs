@@ -1,4 +1,5 @@
-﻿using PayFlow.DOMAIN.Core.Entities;
+﻿using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Core.Entities;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
@@ -13,5 +14,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<int?> GetUltimoNumeroOperacionAsync();
         // Nuevo método para filtrar por usuario, estado y fechas
         Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null);
+        Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId);
+
     }
 }

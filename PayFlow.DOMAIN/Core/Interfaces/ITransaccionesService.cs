@@ -12,5 +12,9 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<bool> UpdateTransaccion(TransaccionesCreateDTO transaccionDTO);
         // Nuevo método para filtrar por usuario, estado y fechas
         Task<IEnumerable<TransaccionesListDTO>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null);
+        
+        //Nuevo método para página de inicio
+        Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId);
+
     }
 }
