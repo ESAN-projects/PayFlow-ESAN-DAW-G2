@@ -68,7 +68,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     CuentaId = cuenta.CuentaId,
                     TipoTransaccion = "Deposito",
                     Monto = registrarDepositoDTO.Monto,
-                    FechaHora = DateTime.UtcNow,
+                    FechaHora = DateTime.Now,
                     Estado = "Pendiente",  // Estado inicial
                     NumeroOperacion = nuevoNumeroOperacion,
                     Banco = registrarDepositoDTO.Banco,
