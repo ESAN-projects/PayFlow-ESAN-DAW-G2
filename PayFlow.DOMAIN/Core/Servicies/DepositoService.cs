@@ -37,7 +37,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 int userId = int.Parse(usuarioId);
 
                 // Obtener el CuentaID asociado al UsuarioID
-                var cuenta = await _cuentasRepository.GetCuentaByIdAsync(userId);
+                var cuenta = await _cuentasRepository.GetCuentaByUsuarioIdAsync(userId);
                 if (cuenta == null)
                 {
                     throw new Exception("Cuenta no encontrada para el usuario.");
@@ -68,7 +68,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     CuentaId = cuenta.CuentaId,
                     TipoTransaccion = "Deposito",
                     Monto = registrarDepositoDTO.Monto,
-                    FechaHora = DateTime.UtcNow,
+                    FechaHora = DateTime.Now,
                     Estado = "Pendiente",  // Estado inicial
                     NumeroOperacion = nuevoNumeroOperacion,
                     Banco = registrarDepositoDTO.Banco,
@@ -86,6 +86,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 return new DepositoDTO
                 {
                     Monto = registrarDepositoDTO.Monto,
+                    NumeroOperacion = nuevoNumeroOperacion,
                     FechaTransaccion = transaccion.FechaHora
                 };
             }

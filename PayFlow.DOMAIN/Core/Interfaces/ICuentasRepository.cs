@@ -13,5 +13,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<bool> UpdateCuentaAsync(Cuentas cuenta);
         Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId);
         Task<Cuentas?> GetCuentaByUsuarioId(int usuarioId);
+        Task<Cuentas?> GetCuentaByUsuarioIdAsync(int usuarioId);
     }
 }
