@@ -24,15 +24,17 @@ namespace PayFlow.DOMAIN.Core.Servicies
             _httpContextAccessor = httpContextAccessor;
         }
         //Get All ADM
-        public async Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync()
+        public async Task<IEnumerable<AdministradorListDTO>> GetAllAdministradoresAsync(string? filtro, string? busqueda)
         {
-            var administradores = await _administradoresRepository.GetAllAdministradoresAsync();
+            var administradores = await _administradoresRepository.GetAllAdministradoresAsync(filtro, busqueda);
             var administradoresDTO = administradores.Select(c => new AdministradorListDTO
             {
                 AdministradorId = c.AdministradorId,
                 Nombres = c.Nombres,
                 Apellidos = c.Apellidos,
-
+                CorreoElectronico = c.CorreoElectronico,
+                EstadoAdministrador = c.EstadoAdministrador,
+                FechaRegistro = c.FechaRegistro
             });
             return administradoresDTO;
         }
@@ -77,7 +79,6 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 AdministradorId = administradorListDTO.AdministradorId,
                 Nombres = administradorListDTO.Nombres,
                 Apellidos = administradorListDTO.Apellidos,
-                ContraseñaHash = administradorListDTO.ContraseñaHash,
                 CorreoElectronico = administradorListDTO.CorreoElectronico,
                 EstadoAdministrador = administradorListDTO.EstadoAdministrador,
                 FechaRegistro = DateTime.Now,

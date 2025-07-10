@@ -15,18 +15,17 @@ namespace PayFlow.API.Controllers
             _administradorService = administradorService;
         }
 
-
         // GET all Administradores
-        [Authorize]
+        // [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAllAdministradores()
+        public async Task<IActionResult> GetAllAdministradores([FromQuery] string? filtro, [FromQuery] string? busqueda)
         {
-            var administradores = await _administradorService.GetAllAdministradoresAsync();
+            var administradores = await _administradorService.GetAllAdministradoresAsync(filtro, busqueda);
             return Ok(administradores);
         }
 
         // GET Administrador by ID
-        [Authorize]
+        // [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAdministradoresById(int id)
         {
@@ -38,7 +37,7 @@ namespace PayFlow.API.Controllers
             return Ok(administradores);
         }
         // Add Administradores
-        [Authorize]
+        // [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddAdministradores([FromBody] AdministradorCreateDTO administradorCreateDTO)
         {

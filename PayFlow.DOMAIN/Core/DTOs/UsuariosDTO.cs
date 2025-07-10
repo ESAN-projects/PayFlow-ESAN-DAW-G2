@@ -19,6 +19,8 @@
         public string Apellidos { get; set; }
         public string Dni { get; set; }
         public string CorreoElectronico { get; set; }
+        public DateTime FechaRegistro { get; set; }
+        public string EstadoUsuario { get; set; }
     }
 
     public class UsuariosCreateDTO
