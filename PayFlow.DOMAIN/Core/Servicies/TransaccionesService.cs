@@ -130,5 +130,10 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return transaccionesDTO;
 
         }
+
+        public async Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId)
+        {
+            return await _transaccionesRepository.ObtenerResumenInicioAsync(usuarioId);
+        }
     }
 }
