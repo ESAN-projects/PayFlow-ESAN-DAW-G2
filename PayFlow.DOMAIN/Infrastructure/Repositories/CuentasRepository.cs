@@ -27,6 +27,12 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return await _context.Cuentas.FirstOrDefaultAsync(c => c.CuentaId == cuentaId);
         }
 
+        // Obtener una cuenta por UsuarioId
+        public async Task<Cuentas?> GetCuentaByUsuarioIdAsync(int usuarioId)
+        {
+            return await _context.Cuentas.FirstOrDefaultAsync(c => c.UsuarioId == usuarioId);
+        }
+
         // Actualizar el saldo de una cuenta
         public async Task<bool> UpdateCuentaAsync(Cuentas cuenta)
         {

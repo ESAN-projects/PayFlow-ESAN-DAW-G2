@@ -8,7 +8,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
     {
         private readonly string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".pdf" };
         private readonly long maxFileSize = 5 * 1024 * 1024; // 5MB
-        private readonly string fileDirectory = @"C:\Users\edgar\Documents\RutaVoucher";
+        private readonly string fileDirectory = @"Imagenes";
 
         public FileService()
         {
