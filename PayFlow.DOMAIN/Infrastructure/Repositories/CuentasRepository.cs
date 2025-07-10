@@ -75,6 +75,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             await _context.Cuentas.AddAsync(cuenta);
             await _context.SaveChangesAsync();
             return cuenta.CuentaId;
+        }
             
         public async Task<Cuentas?> GetCuentaByUsuarioId(int usuarioId)
         {
