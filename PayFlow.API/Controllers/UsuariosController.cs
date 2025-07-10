@@ -15,12 +15,15 @@ namespace PayFlow.API.Controllers
             _usuariosService = usuariosService;
         }
 
-        // get all usuarios
-        [Authorize]
+        // get all usuarios con filtros
         [HttpGet]
-        public async Task<IActionResult> GetAllUsuarios()
+        public async Task<IActionResult> GetAllUsuarios(
+            [FromQuery] string? filtro,
+            [FromQuery] string? busqueda,
+            [FromQuery] DateTime? fechaInicio,
+            [FromQuery] DateTime? fechaFin)
         {
-            var usuarios = await _usuariosService.GetAllUsuariosAsync();
+            var usuarios = await _usuariosService.GetAllUsuariosAsync(filtro, busqueda, fechaInicio, fechaFin);
             return Ok(usuarios);
         }
 

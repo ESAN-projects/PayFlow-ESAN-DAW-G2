@@ -45,7 +45,6 @@
         public string TipoTransaccion { get; set; }  // "Depósito", "Retiro", "Transferencia"
         public decimal Monto { get; set; }
         public string Estado { get; set; }
-        
     }
 
     public class ResumenInicioDTO

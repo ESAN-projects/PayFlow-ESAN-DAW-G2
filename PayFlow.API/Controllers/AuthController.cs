@@ -23,7 +23,7 @@ namespace PayFlow.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginDto)
         {
-            var usuarios = await _usuariosRepository.GetAllUsuariosAsync();
+            var usuarios = await _usuariosRepository.GetAllUsuariosAsync(null, null, null, null);
             var usuario = usuarios.FirstOrDefault(u => u.CorreoElectronico == loginDto.CorreoElectronico && u.ContraseñaHash == loginDto.Contraseña);
             if (usuario == null)
             {
