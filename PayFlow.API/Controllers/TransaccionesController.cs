@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Interfaces;
 using System.Security.Claims;
@@ -12,8 +13,10 @@ namespace PayFlow.API.Controllers
     public class TransaccionesController : ControllerBase
     {
         private readonly ITransaccionesService _transaccionesService;
-        public TransaccionesController(ITransaccionesService transaccionesService)
+        private readonly ILogger<TransaccionesController> _logger;
+        public TransaccionesController(ILogger<TransaccionesController> logger, ITransaccionesService transaccionesService)
         {
+            _logger = logger;
             _transaccionesService = transaccionesService;
         }
         //Get all transacciones
@@ -100,16 +103,42 @@ namespace PayFlow.API.Controllers
         [HttpGet("mis-transacciones")]
         public async Task<IActionResult> GetMisTransacciones([FromQuery] string? estado = null, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
         {
-            Console.WriteLine("Ingresando a controlador");
+            _logger.LogInformation("📥 Ingresando a 'GetMisTransacciones'");
+            _logger.LogInformation("🔎 Filtros recibidos → Estado: {Estado}, FechaInicio: {FechaInicio}, FechaFin: {FechaFin}", estado, fechaInicio, fechaFin);
+
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int usuarioId))
             {
-                Console.WriteLine("❌ Token no contiene el claim de ID de usuario.");
+                _logger.LogWarning("❌ Token no contiene el claim de ID de usuario.");
                 return Unauthorized();
             }
             var transacciones = await _transaccionesService.GetTransaccionesByUsuario(usuarioId, estado, fechaInicio, fechaFin);
             return Ok(transacciones);
+        }
+
+        [Authorize]
+        [HttpGet("resumen-inicio")]
+        public async Task<IActionResult> ObtenerResumenInicio()
+        {
+
+            _logger.LogInformation("Ingresando a resumen Inicio");
+            // Extraer usuarioId desde el token JWT
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (usuarioIdClaim == null)
+                return Unauthorized("Usuario no identificado");
+
+            if (!int.TryParse(usuarioIdClaim.Value, out int usuarioId))
+                return Unauthorized("Usuario inválido");
+
+            var resumen = await _transaccionesService.ObtenerResumenInicioAsync(usuarioId);
+
+            if (resumen == null)
+                return NotFound("No se encontró información para este usuario.");
+
+            return Ok(resumen);
         }
     }
 }
