@@ -179,6 +179,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
             {
                 throw new UnauthorizedAccessException("No tiene permisos para realizar esta acción.");
             }
+            
 
             // Obtener la transacción pendiente
             var transaccion = await _transaccionesRepository.GetTransaccionById(transaccionId);
@@ -205,7 +206,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
 
             // Actualizar el saldo de la cuenta con el monto de la transacción
             cuenta.Saldo += transaccion.Monto;
-            var resultCuenta = await _cuentasRepository.UpdateCuentaAsync(cuenta);
+            await _cuentasRepository.UpdateCuentaAsync(cuenta); //Modificado al modificar API TRANSACCIONES
+            /*var resultCuenta = await _cuentasRepository.UpdateCuentaAsync(cuenta);
 
             if (!resultCuenta)
             {
@@ -213,6 +215,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
             }
 
             return true; // Indica que el depósito ha sido aceptado y procesado correctamente.
+            */
+            return true;
         }
 
     }

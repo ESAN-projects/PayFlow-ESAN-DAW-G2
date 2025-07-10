@@ -51,6 +51,7 @@ builder.Services.AddTransient<JwtTokenGenerator>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
+builder.Services.AddTransient<ITransferenciaService, TransferenciaService>();
 builder.Services.AddHttpContextAccessor();
 
 //Add cors

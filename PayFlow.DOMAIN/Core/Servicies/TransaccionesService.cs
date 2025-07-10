@@ -67,7 +67,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 FechaHora = transaccionDTO.FechaHora,
                 Estado = transaccionDTO.Estado
             };
-            return await _transaccionesRepository.AddTransaccion(transaccion);
+            return await _transaccionesRepository.AddTransaccionAsync(transaccion);
         }
         //Update transacciones
         public async Task<bool> UpdateTransaccion(TransaccionesCreateDTO transaccionDTO)

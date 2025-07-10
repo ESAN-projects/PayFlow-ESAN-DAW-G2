@@ -10,8 +10,9 @@ namespace PayFlow.DOMAIN.Core.Interfaces
     public interface ICuentasRepository
     {
         Task<Cuentas> GetCuentaByIdAsync(int cuentaId);
-        Task<bool> UpdateCuentaAsync(Cuentas cuenta);
+        Task UpdateCuentaAsync(Cuentas cuenta);
         Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId);
         Task<Cuentas?> GetCuentaByUsuarioIdAsync(int usuarioId);
+        Task<Cuentas?> ObtenerPorNumeroCuentaAsync(string numeroCuenta);
     }
 }
