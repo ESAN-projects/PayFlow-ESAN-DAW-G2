@@ -20,5 +20,7 @@ namespace PayFlow.DOMAIN.Core.DTOs
         public string NumeroOperacion { get; set; }
         //public string RutaVoucher { get; set; }
         public DateTime FechaTransaccion { get; set; }
+
+        public int TransaccionId { get; set; }
     }
 }

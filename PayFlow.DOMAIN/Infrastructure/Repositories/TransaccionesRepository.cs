@@ -3,35 +3,52 @@ using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
 using PayFlow.DOMAIN.Infrastructure.Data;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace PayFlow.DOMAIN.Infrastructure.Repositories
 {
     public class TransaccionesRepository : ITransaccionesRepository
     {
         private readonly PayflowContext _context;
+
         public TransaccionesRepository(PayflowContext context)
         {
             _context = context;
         }
 
-        //Get all transacciones
         public async Task<IEnumerable<Transacciones>> GetAllTransacciones()
         {
             return await _context.Transacciones.ToListAsync();
         }
-        //Get transacciones by id
+
         public async Task<Transacciones?> GetTransaccionById(int id)
         {
             return await _context.Transacciones.Where(c => c.TransaccionId == id).FirstOrDefaultAsync();
         }
-        //Add transacciones
+
+        // Legacy: solo para usos antiguos, no para transferencias atómicas
         public async Task<int> AddTransaccion(Transacciones transaccion)
         {
             await _context.Transacciones.AddAsync(transaccion);
             await _context.SaveChangesAsync();
             return transaccion.TransaccionId;
         }
-        //Update transacciones
+
+        // Para transferencias atómicas (NO llama SaveChangesAsync)
+        public async Task<int> AddTransaccionAsync(Transacciones transaccion)
+        {
+            await _context.Transacciones.AddAsync(transaccion);
+            return transaccion.TransaccionId;
+        }
+
+        // Para transferencias atómicas (NO llama SaveChangesAsync)
+        public async Task AddRangeTransaccionesAsync(IEnumerable<Transacciones> transacciones)
+        {
+            await _context.Transacciones.AddRangeAsync(transacciones);
+        }
+
         public async Task<bool> UpdateTransaccion(Transacciones transaccion)
         {
             var existingTransaccion = await GetTransaccionById(transaccion.TransaccionId);
@@ -56,7 +73,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        //Rechazar (Delete) transacciones
+
         public async Task<bool> RechazarTransaccion(int id)
         {
             var transaccion = await GetTransaccionById(id);
@@ -70,13 +87,11 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             return true;
         }
 
-        //Get transacciones by cuentaId
         public async Task<IEnumerable<Transacciones>> GetTransaccionesByCuentaId(int cuentaId)
         {
             return await _context.Transacciones.Where(c => c.CuentaId == cuentaId).ToListAsync();
         }
 
-        // Obtener el último número de operación registrado
         public async Task<int?> GetUltimoNumeroOperacionAsync()
         {
             var lastTransaccion = await _context.Transacciones
@@ -84,40 +99,31 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                                              .FirstOrDefaultAsync();
             if (lastTransaccion == null)
             {
-                return 1242; // Si no hay registros, se empieza desde el número OP1243
+                return 1242;
             }
-
             var numeroOperacion = lastTransaccion.NumeroOperacion;
-            // Extraer el número de operación (después de "OP")
             var numero = int.Parse(numeroOperacion.Substring(2));
-
             return numero;
         }
 
-        // Nuevo método para filtrar por usuario, estado y fechas
-        public async Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null)
+        public async Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, System.DateTime? fechaInicio = null, System.DateTime? fechaFin = null)
         {
             var query = _context.Transacciones
                 .Include(t => t.Cuenta)
                 .Where(t => t.Cuenta.UsuarioId == usuarioId);
-
             if (!string.IsNullOrEmpty(estado))
                 query = query.Where(t => t.Estado == estado);
-
             if (fechaInicio.HasValue)
                 query = query.Where(t => t.FechaHora >= fechaInicio.Value);
-
             if (fechaFin.HasValue)
             {
-                // Si la fechaFin no tiene hora, ajusta para incluir todo el día
                 var fin = fechaFin.Value;
-                if (fin.TimeOfDay == TimeSpan.Zero)
+                if (fin.TimeOfDay == System.TimeSpan.Zero)
                 {
-                    fin = fin.Date.AddDays(1).AddTicks(-1); // 23:59:59.9999999
+                    fin = fin.Date.AddDays(1).AddTicks(-1);
                 }
                 query = query.Where(t => t.FechaHora <= fin);
             }
-
             return await query.ToListAsync();
         }
 
@@ -126,10 +132,8 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             var cuenta = await _context.Cuentas
                 .Where(c => c.UsuarioId == usuarioId && c.EstadoCuenta == "Activo")
                 .FirstOrDefaultAsync();
-
             if (cuenta == null)
                 return null;
-
             var movimientos = await _context.Transacciones
                 .Where(t => t.CuentaId == cuenta.CuentaId)
                 .OrderByDescending(t => t.FechaHora)
@@ -143,7 +147,6 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                     Estado = t.Estado
                 })
                 .ToListAsync();
-
             return new ResumenInicioDTO
             {
                 NumeroCuenta = cuenta.NumeroCuenta,
@@ -151,7 +154,5 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                 Movimientos = movimientos
             };
         }
-
-
     }
 }

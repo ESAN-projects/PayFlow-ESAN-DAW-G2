@@ -53,16 +53,13 @@ builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<ICuentasService, CuentasService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
+
+builder.Services.AddTransient<ITransferenciaService, TransferenciaService>();
+
+builder.Services.AddTransient<PayFlow.DOMAIN.Core.Interfaces.ICuentasService, PayFlow.DOMAIN.Core.Servicies.CuentasService>();
 builder.Services.AddHttpContextAccessor();
 
-//Add cors
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
-});
+builder.Services.AddTransient<ICuentasService, CuentasService>();
 
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -113,22 +110,37 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Ingresa el token JWT con el prefijo 'Bearer '"
     });
 
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+
+    /*// Configuraci�n de autenticaci�n JWT
+
+    builder.Services.AddAuthentication(options =>
     {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false; // Solo para desarrollo
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] { }
-        }
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };*/
+});
+//configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
-
 
 var app = builder.Build();
 

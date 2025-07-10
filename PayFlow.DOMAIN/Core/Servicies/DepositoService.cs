@@ -80,21 +80,34 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     Ubicacion = registrarDepositoDTO.Ubicacion
                 };
 
-                // Registrar la transacción en la base de datos
-                var transaccionId = await _transaccionesRepository.AddTransaccion(transaccion);
+                // Registrar la transacción en la base de datos a través del repositorio.
+                // Es crucial que ITransaccionesRepository.AddTransaccionAsync (en su implementación)
+                // llame a _context.SaveChangesAsync() y devuelva el TransaccionId generado por la DB.
+                int transaccionIdGenerada = await _transaccionesRepository.AddTransaccionAsync(transaccion);
 
+                // Devolver un DTO con la información del depósito registrado.
+                // El 'transaccion.TransaccionId' debería estar poblado con el ID real después de la operación de AddTransaccionAsync.
                 return new DepositoDTO
                 {
                     Monto = registrarDepositoDTO.Monto,
                     NumeroOperacion = nuevoNumeroOperacion,
-                    FechaTransaccion = transaccion.FechaHora
+                    FechaTransaccion = transaccion.FechaHora,
+                    TransaccionId = transaccion.TransaccionId // O transaccionIdGenerada, si prefieres usar el valor devuelto explícitamente
                 };
             }
             catch (Exception ex)
             {
+                // Manejo centralizado de excepciones:
+                // 1. Loggear el error completo para depuración.
                 Console.WriteLine($"Error al registrar el depósito: {ex.Message}");
-                throw new Exception("Error al registrar el depósito. Verifique los detalles.");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+
+                // 2. Relanzar una nueva excepción con un mensaje genérico
+                //    o devolver un DTO de respuesta con el error,
+                //    evitando exponer detalles internos de la implementación.
+                throw new Exception("Ocurrió un error inesperado al procesar su solicitud de depósito. Por favor, intente de nuevo más tarde.", ex);
             }
         }
     }
 }
+

@@ -89,7 +89,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 Iporigen = Iporigen
             };
 
-            var transactionId = await _transaccionesRepository.AddTransaccion(transaccion);
+            var transactionId = await _transaccionesRepository.AddTransaccionAsync(transaccion);
 
             if (retiroCreateDTO.Monto > 100000)
             {
