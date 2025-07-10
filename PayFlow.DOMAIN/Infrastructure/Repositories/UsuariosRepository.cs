@@ -17,9 +17,23 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         }
 
         //Get all usuarios
-        public async Task<IEnumerable<Usuarios>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<Usuarios>> GetAllUsuariosAsync(string? filtro, string? busqueda, DateTime? fechaInicio, DateTime? fechaFin)
         {
-            return await _context.Usuarios.Where(x => x.EstadoUsuario == "Activo").ToListAsync();
+            var query = _context.Usuarios.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filtro))
+                query = query.Where(x => x.EstadoUsuario == filtro);
+
+            if (!string.IsNullOrEmpty(busqueda))
+                query = query.Where(x => x.Nombres.Contains(busqueda) || x.Apellidos.Contains(busqueda));
+
+            if (fechaInicio.HasValue)
+                query = query.Where(x => x.FechaRegistro >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                query = query.Where(x => x.FechaRegistro <= fechaFin.Value);
+
+            return await query.ToListAsync();
         }
 
         //Get by id usuarios

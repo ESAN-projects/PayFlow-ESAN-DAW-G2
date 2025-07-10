@@ -22,16 +22,22 @@ namespace PayFlow.DOMAIN.Core.Servicies
         }
 
         //Get all usuarios
-        public async Task<IEnumerable<UsuariosListDTO>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<UsuariosListDTO>> GetAllUsuariosAsync(
+            string? filtro,
+            string? busqueda,
+            DateTime? fechaInicio,
+            DateTime? fechaFin)
         {
-            var usuarios = await _usuariosRepository.GetAllUsuariosAsync();
+            var usuarios = await _usuariosRepository.GetAllUsuariosAsync(filtro, busqueda, fechaInicio, fechaFin);
             var usuariosListDTO = usuarios.Select(usuario => new UsuariosListDTO
             {
                 UsuarioId = usuario.UsuarioId,
                 Nombres = usuario.Nombres,
                 Apellidos = usuario.Apellidos,
                 Dni = usuario.Dni,
-                CorreoElectronico = usuario.CorreoElectronico
+                CorreoElectronico = usuario.CorreoElectronico,
+                FechaRegistro = usuario.FechaRegistro,
+                EstadoUsuario = usuario.EstadoUsuario
             });
             return usuariosListDTO;
         }
