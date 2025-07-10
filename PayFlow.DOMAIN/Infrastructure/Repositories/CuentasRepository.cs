@@ -54,5 +54,23 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             }
             return cuenta;
         }
+
+        //Ultimo numero de cuenta
+        public async Task<string> GetUltimoNumeroCuentaAsync()
+        {
+            var ultimoNumeroCuenta = await _context.Cuentas
+            .Where(c => c.NumeroCuenta != null)
+            .OrderByDescending(c => c.NumeroCuenta)
+            .FirstOrDefaultAsync();
+
+            return ultimoNumeroCuenta?.NumeroCuenta;
+        }
+
+        public async Task<int> AddCuentaAsync(Cuentas cuenta)
+        {
+            await _context.Cuentas.AddAsync(cuenta);
+            await _context.SaveChangesAsync();
+            return cuenta.CuentaId;
+        }
     }
 }
