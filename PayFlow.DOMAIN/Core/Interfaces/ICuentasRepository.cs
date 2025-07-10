@@ -14,5 +14,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<Cuentas?> ObtenerCuentaConTransaccionesAsync(int usuarioId);
         Task<Cuentas?> GetCuentaByUsuarioId(int usuarioId);
         Task<Cuentas?> GetCuentaByUsuarioIdAsync(int usuarioId);
+        Task<string> GetUltimoNumeroCuentaAsync();
+        Task<int> AddCuentaAsync(Cuentas cuenta);
     }
 }
