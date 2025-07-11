@@ -99,5 +99,44 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<int> ContarNuevas(int usuarioId)
+        {
+            return await _context.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId && n.Estado != "Leido")
+                .CountAsync();
+        }
+
+        public async Task<bool> MarcarComoLeidaAsync(int notificacionId, int usuarioId)
+        {
+            var notificacion = await _context.Notificaciones
+                .FirstOrDefaultAsync(n => n.NotificacionId == notificacionId && n.UsuarioId == usuarioId);
+
+            if (notificacion == null)
+                return false;
+
+            notificacion.Estado = "Leido"; // O "LEIDO" según cómo esté definido
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> MarcarTodasComoLeidasAsync(int usuarioId)
+        {
+            var notificaciones = await _context.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId && n.Estado != "Leido")
+                .ToListAsync();
+
+            if (!notificaciones.Any())
+                return false;
+
+            foreach (var notificacion in notificaciones)
+            {
+                notificacion.Estado = "Leido";
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }
