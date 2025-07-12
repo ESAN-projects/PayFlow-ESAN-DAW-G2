@@ -53,10 +53,8 @@ builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<ICuentasService, CuentasService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
-
 builder.Services.AddTransient<ITransferenciaService, TransferenciaService>();
 
-builder.Services.AddTransient<PayFlow.DOMAIN.Core.Interfaces.ICuentasService, PayFlow.DOMAIN.Core.Servicies.CuentasService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<ICuentasService, CuentasService>();
