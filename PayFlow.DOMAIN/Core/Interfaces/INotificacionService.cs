@@ -17,5 +17,9 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<IEnumerable<NotificacionListDTO>> GetAllNotificaciones();
         Task<NotificacionListDTO> GetNotificacionById(int id);
         Task<bool> UpdateNotificacion(NotificacionDTO data);
+        Task<int> ContarNotificacionesNoLeidas(int usuarioId);
+        Task<bool> MarcarNotificacionComoLeidaAsync(int notificacionId, int usuarioId);
+        Task<bool> MarcarTodasComoLeidasAsync(int usuarioId);
+
     }
 }

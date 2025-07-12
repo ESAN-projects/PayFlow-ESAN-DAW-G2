@@ -130,7 +130,20 @@ namespace PayFlow.DOMAIN.Core.Servicies
             return await _notificacionesRepository.DeleteNotificacion(notificacion.NotificacionId);
         }
 
+        public async Task<int> ContarNotificacionesNoLeidas(int usuarioId)
+        {
+            return await _notificacionesRepository.ContarNuevas(usuarioId);
+        }
 
+        public async Task<bool> MarcarNotificacionComoLeidaAsync(int notificacionId, int usuarioId)
+        {
+            return await _notificacionesRepository.MarcarComoLeidaAsync(notificacionId, usuarioId);
+        }
+
+        public async Task<bool> MarcarTodasComoLeidasAsync(int usuarioId)
+        {
+            return await _notificacionesRepository.MarcarTodasComoLeidasAsync(usuarioId);
+        }
 
     }
 }
