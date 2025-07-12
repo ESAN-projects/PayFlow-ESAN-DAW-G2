@@ -140,5 +140,46 @@ namespace PayFlow.API.Controllers
 
             return Ok(resumen);
         }
+
+        [Authorize]
+        [HttpPost("validar-deposito")]
+        public async Task<IActionResult> ValidarDepositoDesdeOCR([FromBody] ValidarDepositoDTO dto)
+        {
+            _logger.LogInformation("🧾 Validando depósito OCR → {NumeroOperacion}, {Monto}, {NumeroCuenta}, {FechaHora}",
+                dto.NumeroOperacion, dto.Monto, dto.NumeroCuenta, dto.FechaHora);
+
+            // ✅ Obtener CuentaId desde el token (claims)
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (usuarioIdClaim == null)
+                return Unauthorized("Usuario no identificado");
+
+            if (!int.TryParse(usuarioIdClaim.Value, out int usuarioId))
+                return Unauthorized("Usuario inválido");
+
+            // ✅ Asignar al DTO
+            dto.CuentaId = usuarioId;
+
+            var resultado = await _transaccionesService.ValidarDepositoAsync(dto);
+
+            if (resultado == null)
+            {
+                _logger.LogWarning("⚠️ No se encontró una transacción válida.");
+                return NotFound(new
+                {
+                    mensaje = "No se encontró una transacción válida con los datos proporcionados.",
+                    exito = false
+                });
+            }
+
+            return Ok(new
+            {
+                mensaje = "✅ Depósito validado correctamente.",
+                transaccionId = resultado.TransaccionId,
+                estado = resultado.Estado,
+                exito = true
+            });
+        }
+
+
     }
 }

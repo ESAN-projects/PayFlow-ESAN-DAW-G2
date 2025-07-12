@@ -64,4 +64,21 @@
         public string Estado { get; set; }
     }
 
+    public class ValidarDepositoDTO
+    {
+        public string NumeroOperacion { get; set; } = null!;
+        public decimal Monto { get; set; }
+        public int CuentaId { get; set; }
+        public string NumeroCuenta { get; set; } = null!; // opcional: para validar contra el número real
+        public DateTime FechaHora { get; set; }
+    }
+
+    public class DepositoValidacionDTO
+    {
+        public string NumeroOperacion { get; set; } = string.Empty;
+        public decimal Monto { get; set; }
+        public string NumeroCuenta { get; set; } = string.Empty;
+        public DateTime FechaHora { get; set; }
+    }
+
 }

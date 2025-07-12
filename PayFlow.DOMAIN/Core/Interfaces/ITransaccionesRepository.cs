@@ -15,5 +15,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         Task<IEnumerable<Transacciones>> GetTransaccionesByUsuario(int usuarioId, string? estado = null, DateTime? fechaInicio = null, DateTime? fechaFin = null);
         Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId);
         Task AddRangeTransaccionesAsync(IEnumerable<Transacciones> transacciones);
+        Task<Transacciones?> ValidarTransaccionDepositoAsync(string numeroOperacion, decimal monto, int cuentaId, DateTime fechaHora);
+        Task<Cuentas?> ObtenerCuentaPorNumeroAsync(string numeroCuenta);
     }
 }

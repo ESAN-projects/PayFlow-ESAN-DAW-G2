@@ -154,5 +154,31 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
                 Movimientos = movimientos
             };
         }
+
+        public async Task<Transacciones?> ValidarTransaccionDepositoAsync(string numeroOperacion, decimal monto, int cuentaId, DateTime fechaHora)
+        {
+            // Ajuste: buscamos con cierta tolerancia de ±2 minutos por OCR
+            var desde = fechaHora.AddMinutes(-2);
+            var hasta = fechaHora.AddMinutes(2);
+
+
+            return await _context.Transacciones
+                .Where(t =>
+                    t.TipoTransaccion == "Deposito" &&
+                    t.NumeroOperacion == numeroOperacion &&
+                    t.Monto == monto &&
+                    t.CuentaId == cuentaId &&
+                    t.FechaHora >= desde &&
+                    t.FechaHora <= hasta &&
+                    t.Estado != "Aceptado") // solo si aún no fue aceptada
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Cuentas?> ObtenerCuentaPorNumeroAsync(string numeroCuenta)
+        {
+            return await _context.Cuentas
+                .FirstOrDefaultAsync(c => c.NumeroCuenta == numeroCuenta);
+        }
+
     }
 }

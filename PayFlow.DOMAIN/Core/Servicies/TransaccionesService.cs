@@ -1,15 +1,16 @@
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PayFlow.DOMAIN.Core.DTOs;
 using PayFlow.DOMAIN.Core.Entities;
 using PayFlow.DOMAIN.Core.Interfaces;
-using System.Net;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PayFlow.DOMAIN.Core.Servicies
 {
@@ -144,5 +145,35 @@ namespace PayFlow.DOMAIN.Core.Servicies
         {
             return await _transaccionesRepository.ObtenerResumenInicioAsync(usuarioId);
         }
+
+        public async Task<Transacciones?> ValidarDepositoAsync(ValidarDepositoDTO dto)
+        {
+            // Validar que exista la cuenta con ese número y esté activa
+            var cuenta = await _transaccionesRepository.ObtenerCuentaPorNumeroAsync(dto.NumeroCuenta);
+
+            if (cuenta == null || cuenta.EstadoCuenta != "Activa")
+            {
+                return null; // cuenta inválida o inactiva
+            }
+
+            // Buscar si hay una transacción coincidente
+            var transaccion = await _transaccionesRepository.ValidarTransaccionDepositoAsync(
+                dto.NumeroOperacion,
+                dto.Monto,
+                cuenta.CuentaId,
+                dto.FechaHora
+            );
+
+            if (transaccion != null)
+            {
+                // Marcar como aceptada y guardar
+                transaccion.Estado = "Aceptado";
+                await _transaccionesRepository.UpdateTransaccion(transaccion);
+            }
+
+            return transaccion;
+        }
+
+
     }
 }

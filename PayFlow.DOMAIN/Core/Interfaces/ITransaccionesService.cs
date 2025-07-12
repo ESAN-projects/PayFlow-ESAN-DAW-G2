@@ -1,4 +1,5 @@
 ﻿using PayFlow.DOMAIN.Core.DTOs;
+using PayFlow.DOMAIN.Core.Entities;
 
 namespace PayFlow.DOMAIN.Core.Interfaces
 {
@@ -15,6 +16,7 @@ namespace PayFlow.DOMAIN.Core.Interfaces
         
         //Nuevo método para página de inicio
         Task<ResumenInicioDTO?> ObtenerResumenInicioAsync(int usuarioId);
+        Task<Transacciones?> ValidarDepositoAsync(ValidarDepositoDTO dto);
 
     }
 }
