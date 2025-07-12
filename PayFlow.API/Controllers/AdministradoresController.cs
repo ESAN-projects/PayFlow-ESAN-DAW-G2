@@ -16,7 +16,7 @@ namespace PayFlow.API.Controllers
         }
 
         // GET all Administradores
-        // [Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAdministradores([FromQuery] string? filtro, [FromQuery] string? busqueda)
         {
