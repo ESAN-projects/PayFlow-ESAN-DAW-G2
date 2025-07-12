@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace PayFlow.DOMAIN.Core.DTOs
 {
-    public class RetiroCreateDTO
-    {
-        public string NumeroCuenta { get; set; }
-        public decimal Monto { get; set; }
-    }
-
     public class RetiroDTO
     {
         public int TransaccionId { get; set; }

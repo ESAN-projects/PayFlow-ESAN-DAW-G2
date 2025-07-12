@@ -49,7 +49,7 @@ namespace PayFlow.API.Controllers
                    throw new ArgumentException("Usuario no encontrado o inválido.");
                 }
 
-                var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen, usuarioId);
+                var transaccionId = await _retiroService.AddRetiro(retiro, Iporigen);
                 if (transaccionId <= 0)
                 {
                     return BadRequest("Error al procesar el retiro.");
@@ -58,22 +58,11 @@ namespace PayFlow.API.Controllers
                 var retiroCreated = await _retiroService.GetRetiroById(transaccionId);
                 return CreatedAtAction(nameof(GetRetiroById), new { retiroId = transaccionId }, retiroCreated);
             }
-            catch (InvalidOperationException ex)
-            {
-                // Ejemplo: saldo insuficiente, cuenta no encontrada, etc.
-                return BadRequest(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                // Ejemplo: argumentos inválidos
-                return BadRequest(ex.Message);
-            }
             catch (Exception ex)
             {
-                // Otros errores no controlados
-                return StatusCode(500, "Error interno del servidor: " + ex.Message);
+                // Retornar el mensaje de excepción directamente para depuración
+                return BadRequest(ex.Message);
             }
-
         }
     }
 }
