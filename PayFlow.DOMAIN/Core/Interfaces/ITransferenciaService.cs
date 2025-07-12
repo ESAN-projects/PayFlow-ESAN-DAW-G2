@@ -5,6 +5,6 @@ namespace PayFlow.DOMAIN.Core.Interfaces
 {
     public interface ITransferenciaService
     {
-        Task<TransferenciaResponseDto> RealizarTransferenciaAsync(TransferenciaRequestDto requestDto);
+        Task<TransferenciaResponseDto> RealizarTransferenciaAsync(TransferenciaRequestDto requestDto, string cuentaOrigenNumero);
     }
 }
