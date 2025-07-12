@@ -29,15 +29,14 @@ namespace PayFlow.DOMAIN.Core.Servicies
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<TransferenciaResponseDto> RealizarTransferenciaAsync(TransferenciaRequestDto requestDto)
+        public async Task<TransferenciaResponseDto> RealizarTransferenciaAsync(TransferenciaRequestDto requestDto, string cuentaOrigenNumero)
         {
-            // Validaciones de cuentas
-            if (requestDto.CuentaOrigenNumero == requestDto.CuentaDestinoNumero)
+            if (cuentaOrigenNumero == requestDto.CuentaDestinoNumero)
             {
                 return new TransferenciaResponseDto { Success = false, Message = "La cuenta de origen y destino no pueden ser la misma." };
             }
 
-            var cuentaOrigen = await _cuentasRepository.ObtenerPorNumeroCuentaAsync(requestDto.CuentaOrigenNumero);
+            var cuentaOrigen = await _cuentasRepository.ObtenerPorNumeroCuentaAsync(cuentaOrigenNumero);
             var cuentaDestino = await _cuentasRepository.ObtenerPorNumeroCuentaAsync(requestDto.CuentaDestinoNumero);
 
             if (cuentaOrigen == null)
@@ -62,8 +61,9 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 await _cuentasRepository.UpdateCuentaAsync(cuentaOrigen);
                 await _cuentasRepository.UpdateCuentaAsync(cuentaDestino);
 
-                // Generar NumeroOperacion único
-                var numeroOperacion = Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
+                // Generar NumeroOperacion tipo OP{N}
+                var ultimoNumeroOperacion = await _transaccionesRepository.GetUltimoNumeroOperacionAsync();
+                var nuevoNumeroOperacion = $"OP{(ultimoNumeroOperacion.GetValueOrDefault() + 1)}";
                 var ipOrigen = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
 
                 // Crear transacciones
@@ -74,8 +74,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     Monto = requestDto.Monto,
                     FechaHora = DateTime.UtcNow,
                     Estado = "Aceptado",
-                    NumeroOperacion = numeroOperacion,
-                    Comentario = requestDto.Comentario,
+                    NumeroOperacion = nuevoNumeroOperacion,
+                    Comentario = null,
                     CuentaDestinoId = cuentaDestino.CuentaId,
                     Iporigen = ipOrigen,
                     Ubicacion = null
@@ -87,8 +87,8 @@ namespace PayFlow.DOMAIN.Core.Servicies
                     Monto = requestDto.Monto,
                     FechaHora = DateTime.UtcNow,
                     Estado = "Aceptado",
-                    NumeroOperacion = numeroOperacion,
-                    Comentario = $"Transferencia recibida de {requestDto.CuentaOrigenNumero}",
+                    NumeroOperacion = nuevoNumeroOperacion,
+                    Comentario = $"Transferencia recibida de {cuentaOrigenNumero}",
                     CuentaDestinoId = null,
                     Iporigen = ipOrigen,
                     Ubicacion = null
@@ -102,7 +102,7 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 {
                     Success = true,
                     Message = "Transferencia realizada con éxito.",
-                    NumeroOperacion = numeroOperacion,
+                    NumeroOperacion = nuevoNumeroOperacion,
                     MontoTransferido = requestDto.Monto
                 };
             }

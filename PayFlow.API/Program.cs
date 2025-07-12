@@ -54,10 +54,16 @@ builder.Services.AddTransient<ICuentasService, CuentasService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IDepositoService, DepositoService>();
 builder.Services.AddTransient<ITransferenciaService, TransferenciaService>();
-
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddTransient<ICuentasService, CuentasService>();
+//Add cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 
 //Add JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -70,7 +76,7 @@ builder.Services.AddAuthentication(options =>
     bearer.SaveToken = false;
     bearer.TokenValidationParameters = new TokenValidationParameters
     {
-        
+
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true, // Habilita la validacion de expiracion
@@ -108,37 +114,22 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Ingresa el token JWT con el prefijo 'Bearer '"
     });
 
-
-    /*// Configuraci�n de autenticaci�n JWT
-
-    builder.Services.AddAuthentication(options =>
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false; // Solo para desarrollo
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("clave-secreta-para-desarrollo")),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };*/
-});
-//configuración de CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
     });
 });
+
 
 var app = builder.Build();
 
