@@ -40,6 +40,7 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         public async Task<int> AddTransaccionAsync(Transacciones transaccion)
         {
             await _context.Transacciones.AddAsync(transaccion);
+            await _context.SaveChangesAsync();
             return transaccion.TransaccionId;
         }
 

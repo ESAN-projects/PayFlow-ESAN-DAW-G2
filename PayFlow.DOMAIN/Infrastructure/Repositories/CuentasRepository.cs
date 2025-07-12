@@ -37,8 +37,9 @@ namespace PayFlow.DOMAIN.Infrastructure.Repositories
         public async Task UpdateCuentaAsync(Cuentas cuenta)
         {
             _context.Cuentas.Update(cuenta);
-            // No llamar a SaveChangesAsync aquí
+            await _context.SaveChangesAsync();
         }
+
         /*public async Task UpdateCuentaAsync(Cuentas cuenta)
         {
             var local = _context.Cuentas.Local.FirstOrDefault(e => e.CuentaId == cuenta.CuentaId);

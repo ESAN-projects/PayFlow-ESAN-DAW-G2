@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,11 +19,13 @@ namespace PayFlow.DOMAIN.Core.Servicies
         public readonly ITransaccionesRepository _transaccionesRepository;
         public readonly INotificacionService _notificacionService;
         private readonly ICuentasService _cuentasService;
-        public RetiroService(ITransaccionesRepository transaccionesRepository, INotificacionService notificacionService, ICuentasService cuentasService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public RetiroService(ITransaccionesRepository transaccionesRepository, INotificacionService notificacionService, ICuentasService cuentasService, IHttpContextAccessor httpContextAccessor)
         {
             _transaccionesRepository = transaccionesRepository;
             _notificacionService = notificacionService;
             _cuentasService = cuentasService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         
@@ -50,34 +53,44 @@ namespace PayFlow.DOMAIN.Core.Servicies
         }
 
         //Add Draw transacciones
-        public async Task<int> AddRetiro(RetiroCreateDTO retiroCreateDTO, string Iporigen, int usuarioId)
+        public async Task<int> AddRetiro(RetiroCreateDTO retiroCreateDTO, string Iporigen)
         {
-            var cuentaUser = await _cuentasService.GetCuentaByUsuarioId(usuarioId) ??
-                throw new InvalidOperationException("Cuenta no encontrada.");
-
-            if (cuentaUser.NumeroCuenta != retiroCreateDTO.NumeroCuenta)
+            var usuarioIdString = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var usuarioId = int.Parse(usuarioIdString);
+            if (usuarioId == null)
             {
-                throw new InvalidOperationException("Cuenta no válida.");
+                throw new Exception("Usuario no autenticado.");
+            }
+            // Obtener la cuenta asociada al usuario autenticado
+            var cuentaUser = await _cuentasService.GetCuentaByUsuarioId(usuarioId);
+            if (cuentaUser == null)
+            {
+                throw new InvalidOperationException("Cuenta no encontrada para el usuario autenticado.");
             }
 
-            // Validate the transaccion object before adding
+            // Validar monto
             if (retiroCreateDTO.Monto <= 1)
             {
-                throw new ArgumentException("Monto debe mayor a 1 Sol.");
+                throw new ArgumentException("Monto debe ser mayor a 1 Sol.");
             }
 
-            var estado = "Aceptado"; // Default state for the transaction
-
+            var estado = "Aceptado";
             if (retiroCreateDTO.Monto > 100000)
             {
-                estado = "Pendiente"; // If the amount is greater than 100000, set state to "Pendiente"
+                estado = "Pendiente";
             }
-            
+
             var cuenta = await _cuentasService.GetCuentaById(cuentaUser.CuentaId);
+            if (cuenta == null)
+                throw new InvalidOperationException("Cuenta no encontrada.");
 
             // Validar saldo suficiente
             if (cuenta.Saldo < retiroCreateDTO.Monto)
                 throw new InvalidOperationException("Saldo insuficiente para realizar el retiro.");
+
+            // Obtener el último numeroOperacion
+            var ultimoNumeroOperacion = await _transaccionesRepository.GetUltimoNumeroOperacionAsync();
+            var nuevoNumeroOperacion = $"OP{ultimoNumeroOperacion + 1}";
 
             var transaccion = new Transacciones
             {
@@ -86,14 +99,14 @@ namespace PayFlow.DOMAIN.Core.Servicies
                 Monto = retiroCreateDTO.Monto,
                 FechaHora = DateTime.Now,
                 Estado = estado,
-                Iporigen = Iporigen
+                Iporigen = Iporigen,
+                NumeroOperacion = nuevoNumeroOperacion
             };
 
             var transactionId = await _transaccionesRepository.AddTransaccionAsync(transaccion);
 
             if (retiroCreateDTO.Monto > 100000)
             {
-                // registramos mensaje de notificación
                 var notificacion = new NotificacionCreateDTO
                 {
                     UsuarioId = cuenta.UsuarioId,
