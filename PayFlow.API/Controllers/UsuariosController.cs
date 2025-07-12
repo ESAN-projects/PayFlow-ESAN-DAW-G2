@@ -16,6 +16,7 @@ namespace PayFlow.API.Controllers
         }
 
         // get all usuarios con filtros
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsuarios(
             [FromQuery] string? filtro,
